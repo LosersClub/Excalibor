@@ -3,20 +3,21 @@ package losers.club.excalibor.argument.primitives;
 import losers.club.excalibor.argument.Argument;
 import losers.club.excalibor.argument.MethodList;
 
-public class IntArgument implements NumberArgument{
-  private static final MethodList methods = new MethodList(IntArgument.class);
+public class DoubleArgument implements NumberArgument{
+
+  private static final MethodList methods = new MethodList(DoubleArgument.class);
 
   public static MethodList getMethodList() {
     return methods;
   }
 
-  private final int value;
+  private final double value;
 
-  public IntArgument() {
-    this.value = Integer.MIN_VALUE;
+  public DoubleArgument() {
+    this.value = Double.MIN_VALUE;
   }
 
-  public IntArgument(int value) {
+  public DoubleArgument(double value) {
     this.value = value;
   }
 
@@ -33,33 +34,33 @@ public class IntArgument implements NumberArgument{
         return null;
       }
     }
-    return new IntArgument(Integer.valueOf(expression));
+    return new DoubleArgument(Double.valueOf(expression));
   }
 
   @Override
-  public IntArgument add(Argument rhs) {
-    return new IntArgument((int)(this.value + getRhsValue("+", rhs)));
+  public DoubleArgument add(Argument rhs) {
+    return new DoubleArgument(this.value + getRhsValue("+", rhs));
   }
 
 
   @Override
   public Argument subtract(Argument rhs) {
-    return new IntArgument((int)(this.value - getRhsValue("-", rhs)));
+    return new DoubleArgument(this.value - getRhsValue("-", rhs));
   }
 
   @Override
   public Argument multiply(Argument rhs) {
-    return new IntArgument((int)(this.value * getRhsValue("*", rhs)));
+    return new DoubleArgument(this.value * getRhsValue("*", rhs));
   }
 
   @Override
   public Argument divide(Argument rhs) {
-    return new IntArgument((int)(this.value / getRhsValue("/", rhs)));
+    return new DoubleArgument(this.value / getRhsValue("/", rhs));
   }
 
   @Override
   public Argument modulo(Argument rhs) {
-    return new IntArgument((int)(this.value % getRhsValue("%", rhs)));
+    return new DoubleArgument(this.value % getRhsValue("%", rhs));
   }
 
   @Override
@@ -83,7 +84,7 @@ public class IntArgument implements NumberArgument{
     }
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Integer.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+        Double.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
 }

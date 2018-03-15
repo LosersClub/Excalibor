@@ -10,7 +10,7 @@ public class BooleanArgument implements LogicalArgument {
     return methods;
   }
 
-  private boolean value;
+  private final boolean value;
 
   public BooleanArgument() {
     this.value = false;
@@ -21,7 +21,7 @@ public class BooleanArgument implements LogicalArgument {
   }
 
   public BooleanArgument not() {
-    return null;
+    return new BooleanArgument(!this.value);
   }
 
   @Override
@@ -40,40 +40,31 @@ public class BooleanArgument implements LogicalArgument {
 
   @Override
   public BooleanArgument equals(Argument rhs) {
-    if (rhs.getValue() instanceof Boolean) {
-      return new BooleanArgument(this.value == (boolean)rhs.getValue());
-    }
-    throw new IllegalArgumentException(getExceptionString("==", rhs));
+    return new BooleanArgument(this.value == getRhsValue("==", rhs));
   }
 
   @Override
   public BooleanArgument and(Argument rhs) {
-    if (rhs.getValue() instanceof Boolean) {
-      return new BooleanArgument(this.value && (boolean)rhs.getValue());
-    }
-    throw new IllegalArgumentException(getExceptionString("&&", rhs));
+    return new BooleanArgument(this.value && getRhsValue("&&", rhs));
   }
 
   @Override
   public BooleanArgument or(Argument rhs) {
-    if (rhs.getValue() instanceof Boolean) {
-      return new BooleanArgument(this.value || (boolean)rhs.getValue());
-    }
-    throw new IllegalArgumentException(getExceptionString("||", rhs));
+    return new BooleanArgument(this.value || getRhsValue("||", rhs));
   }
 
   @Override
   public BooleanArgument xor(Argument rhs) {
-    if (rhs.getValue() instanceof Boolean) {
-      return new BooleanArgument(this.value ^ (boolean)rhs.getValue());
-    }
-    throw new IllegalArgumentException(getExceptionString("^ [xor]", rhs));
+    return new BooleanArgument(this.value ^ getRhsValue("^ [xor]", rhs));
   }
 
-  private String getExceptionString(String op, Argument rhs) {
-    return String.format(
+  private boolean getRhsValue(String op, Argument rhs) {
+    if (rhs.getValue() instanceof Boolean) {
+      return (boolean)rhs.getValue();
+    }
+    throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Integer.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName());
+        Integer.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
 }

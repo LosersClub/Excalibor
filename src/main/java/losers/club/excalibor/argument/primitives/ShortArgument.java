@@ -3,20 +3,20 @@ package losers.club.excalibor.argument.primitives;
 import losers.club.excalibor.argument.Argument;
 import losers.club.excalibor.argument.MethodList;
 
-public class IntArgument implements NumberArgument{
-  private static final MethodList methods = new MethodList(IntArgument.class);
+public class ShortArgument implements NumberArgument {
+  private static final MethodList methods = new MethodList(ShortArgument.class);
 
   public static MethodList getMethodList() {
     return methods;
   }
 
-  private final int value;
+  private final short value;
 
-  public IntArgument() {
-    this.value = Integer.MIN_VALUE;
+  public ShortArgument() {
+    this.value = Short.MIN_VALUE;
   }
 
-  public IntArgument(int value) {
+  public ShortArgument(short value) {
     this.value = value;
   }
 
@@ -33,33 +33,33 @@ public class IntArgument implements NumberArgument{
         return null;
       }
     }
-    return new IntArgument(Integer.valueOf(expression));
+    return new ShortArgument(Short.valueOf(expression));
   }
 
   @Override
-  public IntArgument add(Argument rhs) {
-    return new IntArgument((int)(this.value + getRhsValue("+", rhs)));
+  public ShortArgument add(Argument rhs) {
+    return new ShortArgument((short)(this.value + getRhsValue("+", rhs)));
   }
 
 
   @Override
   public Argument subtract(Argument rhs) {
-    return new IntArgument((int)(this.value - getRhsValue("-", rhs)));
+    return new ShortArgument((short)(this.value - getRhsValue("-", rhs)));
   }
 
   @Override
   public Argument multiply(Argument rhs) {
-    return new IntArgument((int)(this.value * getRhsValue("*", rhs)));
+    return new ShortArgument((short)(this.value * getRhsValue("*", rhs)));
   }
 
   @Override
   public Argument divide(Argument rhs) {
-    return new IntArgument((int)(this.value / getRhsValue("/", rhs)));
+    return new ShortArgument((short)(this.value / getRhsValue("/", rhs)));
   }
 
   @Override
   public Argument modulo(Argument rhs) {
-    return new IntArgument((int)(this.value % getRhsValue("%", rhs)));
+    return new ShortArgument((short)(this.value % getRhsValue("%", rhs)));
   }
 
   @Override
@@ -83,7 +83,6 @@ public class IntArgument implements NumberArgument{
     }
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Integer.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+        Short.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
-
 }
