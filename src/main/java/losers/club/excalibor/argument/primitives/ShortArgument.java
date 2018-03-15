@@ -13,7 +13,7 @@ public class ShortArgument implements NumberArgument {
   private final short value;
 
   public ShortArgument() {
-    this.value = Short.MIN_VALUE;
+    this(Short.MIN_VALUE);
   }
 
   public ShortArgument(short value) {

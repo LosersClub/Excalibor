@@ -13,7 +13,7 @@ public class StringArgument implements ComparableArgument{
   private final String value;
 
   public StringArgument() {
-    this.value = "";
+    this("");
   }
 
   public StringArgument(String value) {

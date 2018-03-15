@@ -14,7 +14,7 @@ public class DoubleArgument implements NumberArgument{
   private final double value;
 
   public DoubleArgument() {
-    this.value = Double.MIN_VALUE;
+    this(Double.MIN_VALUE);
   }
 
   public DoubleArgument(double value) {

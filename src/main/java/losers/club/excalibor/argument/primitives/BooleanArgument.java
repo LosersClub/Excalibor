@@ -13,7 +13,7 @@ public class BooleanArgument implements LogicalArgument {
   private final boolean value;
 
   public BooleanArgument() {
-    this.value = false;
+    this(false);
   }
 
   public BooleanArgument(boolean value) {
