@@ -28,12 +28,16 @@ public class LongArgument implements NumberArgument {
   @Override
   public Argument parse(String expression) {
     // Char by char parsing because Kyle hates Regex
-    for (int i = 0; i < expression.length(); i++) {
-      if(!Character.isDigit(expression.charAt(i))) {
+    for (int i = 0; i < expression.length() - 1; i++) {
+      if (!Character.isDigit(expression.charAt(i))) {
         return null;
       }
     }
-    return new LongArgument(Long.valueOf(expression));
+    if (expression.charAt(expression.length() - 1) == 'l'
+        || expression.charAt(expression.length() - 1) == 'L') {
+      return new LongArgument(Long.valueOf(expression.substring(0, expression.length() - 1)));
+    }
+    return null;
   }
 
   @Override

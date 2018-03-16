@@ -29,12 +29,18 @@ public class DoubleArgument implements NumberArgument{
   @Override
   public Argument parse(String expression) {
     // Char by char parsing because Kyle hates Regex
+    boolean decimalFound = false;
     for (int i = 0; i < expression.length(); i++) {
-      if(!Character.isDigit(expression.charAt(i))) {
+      if (expression.charAt(i) == '.') {
+        decimalFound = true;
+      } else if(!Character.isDigit(expression.charAt(i))) {
         return null;
       }
     }
-    return new DoubleArgument(Double.valueOf(expression));
+    if (decimalFound) {
+      return new DoubleArgument(Double.valueOf(expression));
+    }
+    return null;
   }
 
   @Override

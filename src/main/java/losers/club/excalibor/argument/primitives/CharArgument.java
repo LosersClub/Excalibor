@@ -27,8 +27,11 @@ public class CharArgument implements NumberArgument {
 
   @Override
   public Argument parse(String expression) {
-    if (expression.startsWith("'") && expression.endsWith("'") && expression.length() == 3) {
-      return new CharArgument(expression.charAt(1));
+    if (expression.startsWith("'") && expression.endsWith("'")) {
+      char[] array = expression.substring(1, expression.length() - 1).toCharArray();
+      if (array.length == 1) {
+        return new CharArgument(array[0]);
+      }
     }
     return null;
   }

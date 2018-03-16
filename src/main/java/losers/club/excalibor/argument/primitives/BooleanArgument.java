@@ -64,7 +64,7 @@ public class BooleanArgument implements LogicalArgument {
     }
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Integer.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+        Boolean.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
 }

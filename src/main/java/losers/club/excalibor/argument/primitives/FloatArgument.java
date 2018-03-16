@@ -28,12 +28,20 @@ public class FloatArgument implements NumberArgument {
   @Override
   public Argument parse(String expression) {
     // Char by char parsing because Kyle hates Regex
-    for (int i = 0; i < expression.length(); i++) {
-      if(!Character.isDigit(expression.charAt(i))) {
+    boolean decimalFound = false;
+    for (int i = 0; i < expression.length() - 1; i++) {
+      if (expression.charAt(i) == '.') {
+        decimalFound = true;
+      } else if(!Character.isDigit(expression.charAt(i))) {
         return null;
       }
     }
-    return new FloatArgument(Float.valueOf(expression));
+    if (decimalFound &&
+        (expression.charAt(expression.length() - 1) == 'f'
+          || expression.charAt(expression.length() - 1) == 'F')) {
+      return new FloatArgument(Float.valueOf(expression));
+    }
+    return null;
   }
 
   @Override
