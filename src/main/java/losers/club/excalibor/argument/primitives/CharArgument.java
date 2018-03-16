@@ -13,7 +13,7 @@ public class CharArgument implements NumberArgument {
   private final char value;
 
   public CharArgument() {
-    this(Character.MIN_VALUE);
+    this('\u0000');
   }
 
   public CharArgument(char value) {

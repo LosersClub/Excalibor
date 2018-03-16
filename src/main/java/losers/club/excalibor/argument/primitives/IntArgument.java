@@ -13,7 +13,7 @@ public class IntArgument implements NumberArgument{
   private final int value;
 
   public IntArgument() {
-    this(Integer.MIN_VALUE);
+    this(0);
   }
 
   public IntArgument(int value) {

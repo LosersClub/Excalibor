@@ -13,7 +13,7 @@ public class FloatArgument implements NumberArgument {
   private final float value;
 
   public FloatArgument() {
-    this(Float.MIN_VALUE);
+    this(0.0f);
   }
 
   public FloatArgument(float value) {

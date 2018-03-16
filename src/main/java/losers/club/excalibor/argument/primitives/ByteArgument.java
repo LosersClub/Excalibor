@@ -13,7 +13,7 @@ public class ByteArgument implements NumberArgument {
   private final byte value;
 
   public ByteArgument() {
-    this(Byte.MIN_VALUE);
+    this((byte)0);
   }
 
   public ByteArgument(byte value) {

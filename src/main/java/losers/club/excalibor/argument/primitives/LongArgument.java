@@ -13,7 +13,7 @@ public class LongArgument implements NumberArgument {
   private final long value;
 
   public LongArgument() {
-    this(Long.MIN_VALUE);
+    this(0L);
   }
 
   public LongArgument(long value) {
