@@ -8,4 +8,5 @@ public interface NumberArgument extends ComparableArgument {
   Argument multiply(Argument rhs);
   Argument divide(Argument rhs);
   Argument modulo(Argument rhs);
+  double getMathTypeValue();
 }

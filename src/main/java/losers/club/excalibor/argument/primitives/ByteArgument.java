@@ -33,9 +33,15 @@ public class ByteArgument implements NumberArgument {
         return null;
       }
     }
-    if (expression.charAt(expression.length() - 1) == 'b' ||
-        expression.charAt(expression.length() - 1) == 'B') {
-      return new ByteArgument(Byte.valueOf(expression.substring(0, expression.length() - 1)));
+    if (expression.length() >= 2 && (expression.charAt(expression.length() - 1) == 'b' ||
+        expression.charAt(expression.length() - 1) == 'B')) {
+      try {
+        byte temp = Byte.valueOf(expression.substring(0, expression.length() - 1));
+        return new ByteArgument(temp);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException(
+            "Value out of range for a byte: " + expression);
+      }
     }
     return null;
   }
@@ -82,11 +88,16 @@ public class ByteArgument implements NumberArgument {
   }
 
   private double getRhsValue(String op, Argument rhs) {
-    if (rhs.getValue() instanceof Number) {
-      return (double)rhs.getValue();
+    if (rhs instanceof NumberArgument) {
+      return ((NumberArgument)(rhs)).getMathTypeValue();
     }
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
         Byte.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+  }
+
+  @Override
+  public double getMathTypeValue() {
+    return this.value;
   }
 }

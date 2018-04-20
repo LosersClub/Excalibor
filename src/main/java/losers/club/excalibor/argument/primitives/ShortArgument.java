@@ -28,6 +28,9 @@ public class ShortArgument implements NumberArgument {
   @Override
   public Argument parse(String expression) {
     // Char by char parsing because Kyle hates Regex
+    if (expression.length() < 2) {
+      return null;
+    }
     for (int i = 0; i < expression.length() - 1; i++) {
       if (!Character.isDigit(expression.charAt(i))) {
         return null;
@@ -35,7 +38,12 @@ public class ShortArgument implements NumberArgument {
     }
     if (expression.charAt(expression.length() - 1) == 's'
         || expression.charAt(expression.length() - 1) == 'S') {
-      return new ShortArgument(Short.valueOf(expression.substring(0, expression.length() - 1)));
+      try {
+        return new ShortArgument(Short.valueOf(expression.substring(0, expression.length() - 1)));
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException(
+            "Value out of range for a short: " + expression);
+      }
     }
     return null;
   }
@@ -82,11 +90,16 @@ public class ShortArgument implements NumberArgument {
   }
 
   private double getRhsValue(String op, Argument rhs) {
-    if (rhs.getValue() instanceof Number) {
-      return (double)rhs.getValue();
+    if (rhs instanceof NumberArgument) {
+      return ((NumberArgument)(rhs)).getMathTypeValue();
     }
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
         Short.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+  }
+
+  @Override
+  public double getMathTypeValue() {
+    return this.value;
   }
 }

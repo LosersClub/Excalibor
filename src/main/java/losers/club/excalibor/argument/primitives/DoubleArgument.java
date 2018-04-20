@@ -29,15 +29,15 @@ public class DoubleArgument implements NumberArgument{
   @Override
   public Argument parse(String expression) {
     // Char by char parsing because Kyle hates Regex
-    boolean decimalFound = false;
+    int decimalCount = 0;
     for (int i = 0; i < expression.length(); i++) {
       if (expression.charAt(i) == '.') {
-        decimalFound = true;
+        decimalCount++;;
       } else if(!Character.isDigit(expression.charAt(i))) {
         return null;
       }
     }
-    if (decimalFound) {
+    if (decimalCount == 1) {
       return new DoubleArgument(Double.valueOf(expression));
     }
     return null;
@@ -85,12 +85,17 @@ public class DoubleArgument implements NumberArgument{
   }
 
   private double getRhsValue(String op, Argument rhs) {
-    if (rhs.getValue() instanceof Number) {
-      return (double)rhs.getValue();
+    if (rhs instanceof NumberArgument) {
+      return ((NumberArgument)(rhs)).getMathTypeValue();
     }
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
         Double.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+  }
+
+  @Override
+  public double getMathTypeValue() {
+    return this.value;
   }
 
 }
