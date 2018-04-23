@@ -28,6 +28,13 @@ public class StringArgument implements ComparableArgument{
   @Override
   public Argument parse(String expression) {
     if(expression.startsWith("\"") && expression.endsWith("\"")) {
+      for (int i = 0; i < expression.length(); i++) {
+        if (expression.charAt(i) == '\\') {
+          expression = expression.substring(0, i) +
+            evaluateEscapeChar(expression.charAt(i + 1)) +
+            expression.substring(i + 2, expression.length());
+        }
+      }
       return new StringArgument(expression.substring(1, expression.length()-1));
     }
     return null;
@@ -59,6 +66,28 @@ public class StringArgument implements ComparableArgument{
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
         String.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+  }
+
+  private String evaluateEscapeChar(char c) {
+    switch(c) {
+      case 't':
+        return "\t";
+      case 'n':
+        return "\n";
+      case 'b':
+        return "\b";
+      case 'r':
+        return "\r";
+      case 'f':
+        return "\f";
+      case '\'':
+        return "\'";
+      case '\"':
+        return "\"";
+      case '\\':
+        return "\\";
+    }
+    throw new IllegalArgumentException("Unknown escape sequence: \"\\" + c + "\"");
   }
 
 }

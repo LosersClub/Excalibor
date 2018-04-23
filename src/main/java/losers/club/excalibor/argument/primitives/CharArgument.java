@@ -24,13 +24,19 @@ public class CharArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
-
   @Override
   public Argument parse(String expression) {
     if (expression.startsWith("'") && expression.endsWith("'")) {
-      char[] array = expression.substring(1, expression.length() - 1).toCharArray();
-      if (array.length == 1) {
-        return new CharArgument(array[0]);
+      if (expression.charAt(1) != '\\' && expression.length() == 3) {
+          return new CharArgument(expression.charAt(1));
+      // Handles the special unicode case: e/x \u0000
+      } else if (expression.length() == 8) {
+        try {
+          char result = (char)Integer.parseInt(expression.substring(3, 7), 16);
+          return new CharArgument(result);
+        } catch (NumberFormatException e) {
+          return null;
+        }
       }
     }
     return null;
@@ -78,12 +84,17 @@ public class CharArgument implements NumberArgument {
   }
 
   private char getRhsValue(String op, Argument rhs) {
-    if (rhs.getValue() instanceof Character) {
-      return (char)rhs.getValue();
+    if (rhs instanceof NumberArgument) {
+      return (char)((NumberArgument)(rhs)).getMathTypeValue();
     }
     throw new IllegalArgumentException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
         Character.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
+  }
+
+  @Override
+  public double getMathTypeValue() {
+    return this.value;
   }
 
 }

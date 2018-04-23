@@ -27,7 +27,7 @@ public class BooleanArgument implements LogicalArgument {
   @Override
   public Argument parse(String expression) {
     expression = expression.toLowerCase();
-    if (expression.equals("true") || expression.equals("false")) {
+    if (expression.equals("true") ^ expression.equals("false")) {
       return new BooleanArgument(Boolean.valueOf(expression));
     }
     return null;
