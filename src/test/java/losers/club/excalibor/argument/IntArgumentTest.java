@@ -83,9 +83,21 @@ public class IntArgumentTest {
   }
 
   @Test
+  public void testLessThanEqualTo() {
+    Assert.assertTrue((boolean)intArgOne.lessThanEqualTo(intArgTwo).getValue());
+    Assert.assertTrue((boolean)intArgTwo.lessThanEqualTo(intArgTwo).getValue());
+  }
+
+  @Test
   public void testGreaterThan() {
     Assert.assertTrue((boolean)intArgTwo.greaterThan(intArgOne).getValue());
     Assert.assertFalse((boolean)intArgOne.greaterThan(intArgTwo).getValue());
+  }
+
+  @Test
+  public void testGreaterThanEqualTo() {
+    Assert.assertTrue((boolean)intArgTwo.greaterThanEqualTo(intArgOne).getValue());
+    Assert.assertTrue((boolean)intArgOne.greaterThanEqualTo(intArgOne).getValue());
   }
 
   @Test
