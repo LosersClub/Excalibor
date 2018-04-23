@@ -41,8 +41,7 @@ public class ShortArgument implements NumberArgument {
       try {
         return new ShortArgument(Short.valueOf(expression.substring(0, expression.length() - 1)));
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException(
-            "Value out of range for a short: " + expression);
+        return null;
       }
     }
     return null;

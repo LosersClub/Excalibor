@@ -35,8 +35,7 @@ public class CharArgument implements NumberArgument {
           char result = (char)Integer.parseInt(expression.substring(3, 7), 16);
           return new CharArgument(result);
         } catch (NumberFormatException e) {
-          throw new IllegalArgumentException(
-              "Value out of range for a char, or invalid unicode: " + expression);
+          return null;
         }
       }
     }

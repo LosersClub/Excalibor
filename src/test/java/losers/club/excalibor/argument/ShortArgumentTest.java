@@ -23,6 +23,7 @@ public class ShortArgumentTest {
     Assert.assertNull(shortArgOne.parse("a12"));
     Assert.assertNull(shortArgOne.parse("1234"));
     Assert.assertNull(shortArgOne.parse("1.23.4d"));
+    Assert.assertNull(shortArgOne.parse("32768S"));
     Assert.assertNull(shortArgOne.parse(""));
     Argument shortArgParsed = shortArgOne.parse("123s");
     Assert.assertTrue(shortArgParsed instanceof ShortArgument
@@ -33,12 +34,6 @@ public class ShortArgumentTest {
     shortArgParsed = shortArgOne.parse("32767S");
     Assert.assertTrue(shortArgParsed instanceof ShortArgument
         && (short)shortArgParsed.getValue() == (short)32767);
-  }
-
-  @Test (expected = IllegalArgumentException.class)
-  public void testNumberTooLong() {
-    shortArgOne.parse("32768S");
-
   }
 
   @Test (expected = IllegalArgumentException.class)

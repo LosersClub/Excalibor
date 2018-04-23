@@ -39,8 +39,7 @@ public class IntArgument implements NumberArgument{
     try {
       return new IntArgument(Integer.valueOf(expression));
     } catch (NumberFormatException e) {
-      throw new IllegalArgumentException(
-          "Value out of range for an integer; use a long: " + expression);
+      return null;
     }
   }
 

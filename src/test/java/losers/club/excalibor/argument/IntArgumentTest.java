@@ -23,6 +23,7 @@ public class IntArgumentTest {
     Assert.assertNull(intArgOne.parse("a12"));
     Assert.assertNull(intArgOne.parse("1234f"));
     Assert.assertNull(intArgOne.parse("1.23.4d"));
+    Assert.assertNull(intArgOne.parse("123456789101112"));
     Assert.assertNull(intArgOne.parse(""));
     Argument intArgParsed = intArgOne.parse("123");
     Assert.assertTrue(intArgParsed instanceof IntArgument
@@ -33,12 +34,6 @@ public class IntArgumentTest {
     intArgParsed = intArgOne.parse("1234567891");
     Assert.assertTrue(intArgParsed instanceof IntArgument
         && (int)intArgParsed.getValue() == 1234567891);
-  }
-
-  @Test (expected = IllegalArgumentException.class)
-  public void testNumberTooLong() {
-    intArgOne.parse("123456789101112");
-
   }
 
   @Test (expected = IllegalArgumentException.class)

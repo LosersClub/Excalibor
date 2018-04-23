@@ -39,8 +39,7 @@ public class ByteArgument implements NumberArgument {
         byte temp = Byte.valueOf(expression.substring(0, expression.length() - 1));
         return new ByteArgument(temp);
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException(
-            "Value out of range for a byte: " + expression);
+        return null;
       }
     }
     return null;

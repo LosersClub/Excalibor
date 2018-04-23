@@ -22,6 +22,7 @@ public class CharArgumentTest {
     Assert.assertNull(charArgOne.parse("1'"));
     Assert.assertNull(charArgOne.parse("'12345678'"));
     Assert.assertNull(charArgOne.parse("'\\12345678'"));
+    Assert.assertNull(charArgOne.parse("'\\ufffg'"));
     Assert.assertNull(charArgOne.parse(""));
     Argument charArgParsed = charArgOne.parse("'a'");
     Assert.assertTrue(charArgParsed instanceof CharArgument
@@ -32,12 +33,6 @@ public class CharArgumentTest {
     charArgParsed = charArgOne.parse("'\\u0123'");
     Assert.assertTrue(charArgParsed instanceof CharArgument
         && (char)charArgParsed.getValue() == '\u0123');
-  }
-
-  @Test (expected = IllegalArgumentException.class)
-  public void testInvalidUnicode() {
-    charArgOne.parse("'\\ufffg'");
-
   }
 
   @Test (expected = IllegalArgumentException.class)

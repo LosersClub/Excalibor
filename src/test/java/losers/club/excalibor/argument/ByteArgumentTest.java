@@ -18,20 +18,15 @@ public class ByteArgumentTest {
   @Test
   public void testParse() {
     Assert.assertNull(byteArgOne.parse("ab"));
-    Assert.assertNull(byteArgOne.parse(""));
     Assert.assertNull(byteArgOne.parse("123"));
+    Assert.assertNull(byteArgOne.parse("123456789101112b"));
+    Assert.assertNull(byteArgOne.parse(""));
     Argument byteArgParsed = byteArgOne.parse("123b");
     Assert.assertTrue(byteArgParsed instanceof ByteArgument
         && (byte)byteArgParsed.getValue() == (byte)123);
     byteArgParsed = byteArgOne.parse("123B");
     Assert.assertTrue(byteArgParsed instanceof ByteArgument
         && (byte)byteArgParsed.getValue() == (byte)123);
-  }
-
-  @Test (expected = IllegalArgumentException.class)
-  public void testNumberTooLong() {
-    byteArgOne.parse("123456789101112b");
-
   }
 
   @Test (expected = IllegalArgumentException.class)
