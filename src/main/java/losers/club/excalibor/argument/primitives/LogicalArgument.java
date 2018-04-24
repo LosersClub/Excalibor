@@ -11,6 +11,8 @@ public interface LogicalArgument extends Argument {
 
   BooleanArgument xor(Argument rhs);
 
+  BooleanArgument not();
+
   default BooleanArgument notEquals(Argument rhs) {
     return equals(rhs).not();
   }
