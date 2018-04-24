@@ -99,4 +99,9 @@ public class ByteArgument implements NumberArgument {
   public double getMathTypeValue() {
     return this.value;
   }
+
+  @Override
+  public Argument negate() {
+    return new ByteArgument((byte)(0 - this.value));
+  }
 }

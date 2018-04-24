@@ -101,4 +101,9 @@ public class ShortArgument implements NumberArgument {
   public double getMathTypeValue() {
     return this.value;
   }
+
+  @Override
+  public Argument negate() {
+    return new ShortArgument((short)(0 - this.value));
+  }
 }

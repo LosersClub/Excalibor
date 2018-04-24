@@ -95,4 +95,9 @@ public class LongArgumentTest {
     Assert.assertFalse((boolean)longArgTwo.equals(longArgOne).getValue());
   }
 
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((0 - (long)longArgTwo.getValue()) == (long)longArgTwo.negate().getValue());
+  }
+
 }

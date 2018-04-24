@@ -94,4 +94,10 @@ public class ShortArgumentTest {
     Assert.assertFalse((boolean)shortArgTwo.equals(shortArgOne).getValue());
   }
 
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((0 - (short)shortArgTwo.getValue()) ==
+        (short)shortArgTwo.negate().getValue());
+  }
+
 }

@@ -95,4 +95,10 @@ public class CharArgumentTest {
     Assert.assertFalse((boolean)charArgTwo.equals(charArgOne).getValue());
   }
 
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((char)(0 - (char)charArgTwo.getValue()) ==
+        (char)charArgTwo.negate().getValue());
+  }
+
 }

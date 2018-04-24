@@ -98,4 +98,9 @@ public class FloatArgument implements NumberArgument {
   public double getMathTypeValue() {
     return this.value;
   }
+
+  @Override
+  public Argument negate() {
+    return new FloatArgument(0 - this.value);
+  }
 }

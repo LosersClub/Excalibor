@@ -20,6 +20,7 @@ public class BooleanArgument implements LogicalArgument {
     this.value = value;
   }
 
+  @Override
   public BooleanArgument not() {
     return new BooleanArgument(!this.value);
   }

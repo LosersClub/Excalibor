@@ -89,4 +89,9 @@ public class ByteArgumentTest {
     Assert.assertFalse((boolean)byteArgTwo.equals(byteArgOne).getValue());
   }
 
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((0 - (byte)byteArgTwo.getValue()) == (byte)byteArgTwo.negate().getValue());
+  }
+
 }

@@ -21,7 +21,8 @@ public class FloatArgumentTest {
   public void testParse() {
     Assert.assertNull(floatArgOne.parse("'1.02f'"));
     Assert.assertNull(floatArgOne.parse("a12"));
-    Assert.assertNull(floatArgOne.parse("1234f"));
+    Assert.assertNull(floatArgOne.parse("1234F"));
+    Assert.assertNull(floatArgOne.parse("12.34g"));
     Assert.assertNull(floatArgOne.parse("1.23.4f"));
     Assert.assertNull(floatArgOne.parse(""));
     Argument floatArgParsed = floatArgOne.parse("1.23f");
@@ -91,6 +92,12 @@ public class FloatArgumentTest {
   public void testEquals() {
     Assert.assertTrue((boolean)floatArgTwo.equals(floatArgTwo).getValue());
     Assert.assertFalse((boolean)floatArgTwo.equals(floatArgOne).getValue());
+  }
+
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((0 - (float)floatArgTwo.getValue()) ==
+        (float)floatArgTwo.negate().getValue());
   }
 
 }
