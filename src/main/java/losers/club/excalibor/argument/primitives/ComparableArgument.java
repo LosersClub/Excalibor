@@ -16,4 +16,8 @@ public interface ComparableArgument extends Argument{
   }
 
   BooleanArgument equals(Argument rhs);
+
+  default BooleanArgument notEquals(Argument rhs) {
+    return equals(rhs).not();
+  }
 }
