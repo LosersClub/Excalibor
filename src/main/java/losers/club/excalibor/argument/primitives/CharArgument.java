@@ -97,4 +97,9 @@ public class CharArgument implements NumberArgument {
     return this.value;
   }
 
+  @Override
+  public Argument negate() {
+    return new CharArgument((char)(0 - this.value));
+  }
+
 }

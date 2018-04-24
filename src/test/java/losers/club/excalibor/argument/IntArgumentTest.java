@@ -106,4 +106,9 @@ public class IntArgumentTest {
     Assert.assertFalse((boolean)intArgTwo.equals(intArgOne).getValue());
   }
 
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((0 - (int)intArgTwo.getValue()) == (int)intArgTwo.negate().getValue());
+  }
+
 }

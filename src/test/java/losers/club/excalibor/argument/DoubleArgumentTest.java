@@ -93,4 +93,10 @@ public class DoubleArgumentTest {
     Assert.assertFalse((boolean)doubleArgTwo.equals(doubleArgOne).getValue());
   }
 
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((0 - (double)doubleArgTwo.getValue()) ==
+        (double)doubleArgTwo.negate().getValue());
+  }
+
 }

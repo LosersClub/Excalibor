@@ -98,4 +98,9 @@ public class IntArgument implements NumberArgument{
     return this.value;
   }
 
+  @Override
+  public Argument negate() {
+    return new IntArgument(0 - this.value);
+  }
+
 }

@@ -93,4 +93,10 @@ public class FloatArgumentTest {
     Assert.assertFalse((boolean)floatArgTwo.equals(floatArgOne).getValue());
   }
 
+  @Test
+  public void testNegate() {
+    Assert.assertTrue((0 - (float)floatArgTwo.getValue()) ==
+        (float)floatArgTwo.negate().getValue());
+  }
+
 }

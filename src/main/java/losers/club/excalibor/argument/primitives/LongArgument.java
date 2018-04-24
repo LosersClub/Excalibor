@@ -97,4 +97,9 @@ public class LongArgument implements NumberArgument {
   public double getMathTypeValue() {
     return this.value;
   }
+
+  @Override
+  public Argument negate() {
+    return new LongArgument(0 - this.value);
+  }
 }

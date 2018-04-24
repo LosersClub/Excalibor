@@ -98,4 +98,9 @@ public class DoubleArgument implements NumberArgument{
     return this.value;
   }
 
+  @Override
+  public Argument negate() {
+    return new DoubleArgument(0 - this.value);
+  }
+
 }
