@@ -296,6 +296,25 @@ public class OperatorsTest {
   public void testOperatorHashCode() {
     Assert.assertTrue(new NegateOperator().hashCode() == "-".hashCode());
   }
+  
+  @Test
+  public void testOperatorPriority() {
+    Assert.assertTrue(new AddOperator().priority() == 11);
+    Assert.assertTrue(new AndOperator().priority() == 4);
+    Assert.assertTrue(new DivideOperator().priority() == 12);
+    Assert.assertTrue(new EqualsOperator().priority() == 8);
+    Assert.assertTrue(new GreaterThanEqOperator().priority() == 9);
+    Assert.assertTrue(new GreaterThanOperator().priority() == 9);
+    Assert.assertTrue(new LessThanEqOperator().priority() == 9);
+    Assert.assertTrue(new LessThanOperator().priority() == 9);
+    Assert.assertTrue(new ModuloOperator().priority() == 12);
+    Assert.assertTrue(new MultiplyOperator().priority() == 12);
+    Assert.assertTrue(new NegateOperator().priority() == 11);
+    Assert.assertTrue(new NotEqualsOperator().priority() == 8);
+    Assert.assertTrue(new NotOperator().priority() == 14);
+    Assert.assertTrue(new OrOperator().priority() == 3);
+    Assert.assertTrue(new XOrOperator().priority() == 6);
+  }
 
   private static boolean exceptionHelper(Runnable call) {
     try {

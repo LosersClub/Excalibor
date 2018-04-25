@@ -10,6 +10,11 @@ public class NotOperator extends UnaryOperator {
   public String getSymbol() {
     return "!";
   }
+  
+  @Override
+  public int priority() {
+   return 14;
+  }
 
   @Override
   public Argument evaluate(Argument rhs) {

@@ -11,6 +11,11 @@ public class AddOperator extends Operator {
   public String getSymbol() {
     return "+";
   }
+  
+  @Override
+  public int priority() {
+    return 11;
+  }
 
   @Override
   public Argument evaluate(Argument lhs, Argument rhs) {

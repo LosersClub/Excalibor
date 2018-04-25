@@ -10,6 +10,11 @@ public class OrOperator extends LogicOperator {
   public String getSymbol() {
     return "||";
   }
+  
+  @Override
+  public int priority() {
+    return 3;
+  }
 
   @Override
   public Argument evaluateLogic(LogicalArgument lhs, Argument rhs) {

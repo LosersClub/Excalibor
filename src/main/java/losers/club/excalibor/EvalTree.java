@@ -14,7 +14,7 @@ public class EvalTree {
   
   public EvalTree() {
     this.root = new Node();
-    currentStack.push(new Bracket(this.root));
+    currentStack.push(new Bracket(null, this.root));
   }
   
   public boolean valid() {
@@ -31,21 +31,27 @@ public class EvalTree {
   }
   
   public void insert(Argument arg, UnaryOperator uOp) {
-    if (this.current().isArg() || (this.current().isOp() && this.current().right != null)) {
+    Node temp = this.current();
+    while (temp.right != null) {
+      temp = temp.right;
+    }
+    
+    if (temp.isArg()) {
       throw new IllegalArgumentException("An operator must be added between to arguments");
     }
+    
     size += 1;
     // First argument to tree (expression with no arg).
-    if (this.current().isEmpty()) {
-      this.current().value = arg;
-      this.current().op = uOp;
+    if (temp.isEmpty()) {
+      temp.value = arg;
+      temp.op = uOp;
       return;
     }
     
     Node node = new Node();
     node.value = arg;
     node.op = uOp;
-    this.current().right = node;
+    temp.right = node;
   }
   
   public void insert(Operator operator) {
@@ -54,24 +60,35 @@ public class EvalTree {
       throw new IllegalArgumentException("No right-hand argument set (double non-unary operators"
           + " is not allowed)");
     }
-    Node node = new Node();
-    node.left = this.current();
-    node.op = operator;
-    this.updateCurrent(node);
+    
     size += 1;
+    Node node = new Node();
+    node.op = operator;
+    if (this.current().isArg() || node.op.priority() <= this.current().op.priority()) {
+      node.left = this.current();
+      this.updateCurrent(node);
+    } else {
+      node.left = this.current().right;
+      current().right = node;
+    }
   }
   
   public void openBracket() {
-    if (this.current().isArg() || this.current().right != null) {
+    Node temp = this.current();
+    while (temp.right != null) {
+      temp = temp.right;
+    }
+    
+    if (temp.isArg()) {
       throw new UnsupportedOperationException("An open bracket must be preceeded by nothing or"
           + " follow an operator");
     }
-    if (this.current().isEmpty()) {
+    if (temp.isEmpty()) {
       this.currentStack.peek().count += 1;
       return;
     }
-    this.current().right = new Node();
-    this.currentStack.push(new Bracket(this.current().right));
+    temp.right = new Node();
+    this.currentStack.push(new Bracket(temp, temp.right));
   }
   
   public void closeBracket() {
@@ -87,12 +104,6 @@ public class EvalTree {
     this.currentStack.pop();
   }
   
-  public void heapify() {
-    if (!this.valid()) {
-      throw new UnsupportedOperationException("Tree must be valid to heapify it");
-    }
-  }
-  
   private Node current() {
     return currentStack.peek().node;
   }
@@ -103,17 +114,18 @@ public class EvalTree {
       this.root = node;
       return;
     }
-    // Update previous current's right child
-    Bracket top = this.currentStack.pop();
-    this.currentStack.peek().node.right = node;
-    this.currentStack.push(top);
+    // Update parents's right child
+    //Bracket top = this.currentStack.pop();
+    this.currentStack.peek().parent.right = node;
   }
   
   private static class Bracket {
+    final Node parent;
     Node node = null;
     int count = 0;
     
-    Bracket(Node node) {
+    Bracket(Node parent, Node node) {
+      this.parent = parent;
       this.node = node;
     }
   }
