@@ -19,7 +19,7 @@ public class EvalTree {
   
   public boolean valid() {
     return this.currentStack.size() == 1 && this.currentStack.peek().count == 0 &&
-        (this.current().isArg() || this.current().right != null);
+        (this.current().isEmpty() || this.current().isArg() || this.current().right != null);
   }
   
   public int size() {
@@ -49,7 +49,8 @@ public class EvalTree {
   }
   
   public void insert(Operator operator) {
-    if (this.current().isOp() && !this.current().isUnary() && this.current().right == null) {
+    if (this.current().isEmpty() || (this.current().isOp() && !this.current().isArg() &&
+        this.current().right == null)) {
       throw new IllegalArgumentException("No right-hand argument set (double non-unary operators"
           + " is not allowed)");
     }
@@ -61,7 +62,7 @@ public class EvalTree {
   }
   
   public void openBracket() {
-    if (this.current().isArg()) {
+    if (this.current().isArg() || this.current().right != null) {
       throw new UnsupportedOperationException("An open bracket must be preceeded by nothing or"
           + " follow an operator");
     }
@@ -69,11 +70,8 @@ public class EvalTree {
       this.currentStack.peek().count += 1;
       return;
     }
-    
-    if (this.current().right == null) {
-      this.current().right = new Node();
-      this.currentStack.push(new Bracket(this.current().right));
-    }
+    this.current().right = new Node();
+    this.currentStack.push(new Bracket(this.current().right));
   }
   
   public void closeBracket() {
@@ -91,7 +89,7 @@ public class EvalTree {
   
   public void heapify() {
     if (!this.valid()) {
-      throw new RuntimeException("Tree must be valid to heapify it");
+      throw new UnsupportedOperationException("Tree must be valid to heapify it");
     }
   }
   
@@ -133,10 +131,6 @@ public class EvalTree {
     
     boolean isArg() {
       return value != null;
-    }
-    
-    boolean isUnary() {
-      return op != null && value != null && op instanceof UnaryOperator;
     }
     
     boolean isOp() {
