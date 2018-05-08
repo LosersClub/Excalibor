@@ -11,19 +11,24 @@ public class MethodList {
       new HashMap<Class<? extends Argument>, MethodList>();
   
   public static Method<?> getMethod(Class<? extends Argument> arg, Class<? extends Operator> op) {
-    MethodList list;
-    if ((list = allLists.get(arg)) == null) {
-      throw new RuntimeException("No MethodList exists for " + arg.getName());
-    }
-    return list.getMethod(op);
+    return getList(arg).getMethod(op);
   }
   
   public static boolean isSupported(Class<? extends Argument> arg, Class<? extends Operator> op) {
+    return getList(arg).isSupported(op);
+  }
+  
+  public static void register(Class<? extends Argument> arg, Class<? extends Operator> op,
+      Method<?> method) {
+    getList(arg).add(op, method);
+  }
+  
+  private static MethodList getList(Class<? extends Argument> arg) {
     MethodList list;
     if ((list = allLists.get(arg)) == null) {
       throw new RuntimeException("No MethodList exists for " + arg.getName());
     }
-    return list.isSupported(op);
+    return list;
   }
   
   public MethodList(Class<? extends Argument> arg) {
@@ -31,10 +36,13 @@ public class MethodList {
     synchronized (allLists) {
       allLists.put(arg, this);
     }
+    
+    // TODO: validate arg class here
   }
   
   
-  public synchronized <T extends Argument> void add(Method<T> method) {
+  public synchronized void add(Class<? extends Operator> op,
+      Method<?> method) {
     // TODO
   }
   

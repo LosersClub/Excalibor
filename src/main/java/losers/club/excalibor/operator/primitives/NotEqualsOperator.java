@@ -11,6 +11,11 @@ public class NotEqualsOperator extends Operator {
   public String getSymbol() {
     return "!=";
   }
+  
+  @Override
+  public int priority() {
+    return 8;
+  }
 
   @Override
   public Argument evaluate(Argument lhs, Argument rhs) {

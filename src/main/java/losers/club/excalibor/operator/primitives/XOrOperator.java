@@ -10,6 +10,11 @@ public class XOrOperator extends LogicOperator {
   public String getSymbol() {
     return "^";
   }
+  
+  @Override
+  public int priority() {
+    return 6;
+  }
 
   @Override
   public Argument evaluateLogic(LogicalArgument lhs, Argument rhs) {

@@ -10,6 +10,11 @@ public class NegateOperator extends UnaryOperator {
   public String getSymbol() {
     return "-";
   }
+  
+  @Override
+  public int priority() {
+    return 11;
+  }
 
   @Override
   public Argument evaluate(Argument rhs) {

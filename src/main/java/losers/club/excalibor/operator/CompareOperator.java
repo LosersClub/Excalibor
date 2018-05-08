@@ -4,7 +4,12 @@ import losers.club.excalibor.argument.Argument;
 import losers.club.excalibor.argument.primitives.ComparableArgument;
 
 public abstract class CompareOperator extends Operator {
-
+  
+  @Override
+  public int priority() {
+    return 9;
+  }
+  
   @Override
   public Argument evaluate(Argument lhs, Argument rhs) {
     if (!(lhs instanceof ComparableArgument)) {
