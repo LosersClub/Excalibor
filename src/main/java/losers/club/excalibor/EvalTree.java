@@ -3,11 +3,11 @@ package losers.club.excalibor;
 import java.util.Stack;
 
 import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.NotEvaluatable;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
 public class EvalTree {
-  // TODO: replace root with first value in stack?
   Node root = null; // TODO: make private/give smarter access?
   private Stack<Bracket> currentStack = new Stack<Bracket>(); // TODO: Custom stack structure
   private int size = 0;
@@ -73,6 +73,39 @@ public class EvalTree {
     }
   }
   
+  public Argument evaluate() throws NotEvaluatableException {
+    if (!this.valid()) {
+      throw new NotEvaluatableException("EvalTree is not currently valid.");
+    }
+    this.evaluate(root);
+    return this.root.value;
+  }
+  
+  private void evaluate(Node node) {
+    if (!node.isOp()) {
+      return;
+    }
+    if (node.isArg()) {
+      node.value = ((UnaryOperator)node.op).evaluate(node.value);
+      return;
+    }
+    if (node.left.isOp()) {
+      evaluate(node.left);
+    }
+    if (node.right.isOp()) {
+      evaluate(node.right);
+    }
+    if (node.left.value instanceof NotEvaluatable &&
+        !((NotEvaluatable)node.left.value).isEvaluatable()) {
+      throw new NotEvaluatableException(String.format("Unable to evaluate %s",  node.left.value));
+    }
+    if (node.right.value instanceof NotEvaluatable &&
+        !((NotEvaluatable)node.right.value).isEvaluatable()) {
+      throw new NotEvaluatableException(String.format("Unable to evaluate %s",  node.right.value));
+    }
+    node.value = node.op.evaluate(node.left.value, node.right.value);
+  }
+  
   public void openBracket() {
     Node temp = this.current();
     while (temp.right != null) {
@@ -115,7 +148,6 @@ public class EvalTree {
       return;
     }
     // Update parents's right child
-    //Bracket top = this.currentStack.pop();
     this.currentStack.peek().parent.right = node;
   }
   

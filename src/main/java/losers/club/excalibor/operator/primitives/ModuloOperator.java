@@ -13,6 +13,9 @@ public class ModuloOperator extends MathOperator {
 
   @Override
   public Argument evaluateMath(NumberArgument lhs, Argument rhs) {
+    if (rhs instanceof NumberArgument && ((NumberArgument) rhs).getMathTypeValue() == 0) {
+      throw new IllegalArgumentException("Invalid value: Modulo of zero");
+    }
     return lhs.modulo(rhs);
   }
 

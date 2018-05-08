@@ -16,8 +16,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import losers.club.excalibor.EvalTree.Node;
 import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.primitives.IntArgument;
+import losers.club.excalibor.argument.primitives.StringArgument;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
+import losers.club.excalibor.operator.primitives.AddOperator;
+import losers.club.excalibor.operator.primitives.AndOperator;
+import losers.club.excalibor.operator.primitives.DivideOperator;
+import losers.club.excalibor.operator.primitives.GreaterThanOperator;
+import losers.club.excalibor.operator.primitives.LessThanEqOperator;
+import losers.club.excalibor.operator.primitives.ModuloOperator;
+import losers.club.excalibor.operator.primitives.MultiplyOperator;
+import losers.club.excalibor.operator.primitives.NegateOperator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EvalTreeTest {
@@ -189,43 +199,103 @@ public class EvalTreeTest {
   
   @Test
   public void inlineBracket() {
+    StringArgument sArg = new StringArgument("arg");
+    AddOperator plus = new AddOperator();
+    
     Node expected = new Node();
-    expected.op = op;
+    expected.op = plus;
     Node leftTree = new Node();
-    leftTree.op = op;
+    leftTree.op = plus;
     expected.left = leftTree;
     Node rightTree = new Node();
-    rightTree.op = op;
+    rightTree.op = plus;
     expected.right = rightTree;
     leftTree.left = new Node();
-    leftTree.left.value = arg;
+    leftTree.left.value = sArg;
     leftTree.right = new Node();
-    leftTree.right.value = arg;
+    leftTree.right.value = sArg;
     rightTree.left = new Node();
-    rightTree.left.value = arg;
+    rightTree.left.value = sArg;
     rightTree.right = new Node();
-    rightTree.right.value = arg;
+    rightTree.right.value = sArg;
     
     
-    tree.insert(arg);
-    tree.insert(op);
-    tree.insert(arg);
-    tree.insert(op);
+    tree.insert(sArg);
+    tree.insert(plus);
+    tree.insert(sArg);
+    tree.insert(plus);
     tree.openBracket();
-    tree.insert(arg);
-    tree.insert(op);
-    tree.insert(arg);
+    tree.insert(sArg);
+    tree.insert(plus);
+    tree.insert(sArg);
     tree.closeBracket();
     assertThat(tree, isSame(expected));
   }
   
-  @Test(expected = UnsupportedOperationException.class)
-  public void heapifyInvalid() {
-    tree.insert(arg);
-    tree.insert(op);
-    tree.heapify();
+  @Test
+  public void priorityTest() throws NotEvaluatableException {
+    IntArgument i = new IntArgument(1);
+    MultiplyOperator mult = new MultiplyOperator();
+    DivideOperator div = new DivideOperator();
+    NegateOperator neg = new NegateOperator();
+    AddOperator add = new AddOperator();
+    
+    Node expected = new Node();
+    expected.op = add;
+    expected.left = new Node();
+    expected.left.value = i;
+    Node subTree = new Node();
+    expected.right = subTree;
+    subTree.op = div;
+    Node leftTree = new Node();
+    subTree.left = leftTree;
+    leftTree.op = mult;
+    leftTree.left = new Node();
+    leftTree.left.value = i;
+    leftTree.right = new Node();
+    leftTree.right.value = i;
+    Node rightTree = new Node();
+    subTree.right = rightTree;
+    rightTree.op = neg;
+    rightTree.left = new Node();
+    rightTree.left.value = i;
+    rightTree.right = new Node();
+    rightTree.right.value = i;
+    
+    tree.insert(i,neg);
+    tree.insert(add);
+    tree.insert(i);
+    tree.insert(mult);
+    tree.insert(i);
+    tree.insert(new ModuloOperator());
+    tree.openBracket();
+    tree.insert(i);
+    tree.insert(neg);
+    tree.insert(i);
+    tree.closeBracket();
+    assertThat(tree, isSame(expected));
+//    System.out.println(EvalTreePrinter.print(tree.root));
+//    System.out.println(tree.evaluate().getValue());
   }
   
+//   @Test
+//   public void priorityTest2() throws NotEvaluatableException {
+//     tree.insert(new IntArgument(1));
+//     tree.insert(new AddOperator());
+//     tree.insert(new IntArgument(4));
+//     tree.insert(new LessThanEqOperator());
+//     tree.insert(new IntArgument(0));
+//     tree.insert(new AndOperator());
+//     tree.insert(new IntArgument(1));
+//     tree.insert(new AddOperator());
+//     tree.insert(new IntArgument(2));
+//     tree.insert(new GreaterThanOperator());
+//     tree.insert(new IntArgument(0));
+//     System.out.println(EvalTreePrinter.print(tree.root));
+//     Argument out = tree.evalute();
+//     System.out.println(out.getValue());
+//   }
+
   private Matcher<EvalTree> isSame(Node expected) {
     return new BaseMatcher<EvalTree>() {
 
@@ -236,7 +306,11 @@ public class EvalTreeTest {
       }
       @Override
       public void describeTo(Description description) {
-        description.appendText("Trees were different");
+        description.appendText("\n" + EvalTreePrinter.print(expected));
+      }
+      @Override
+      public void describeMismatch(Object item, Description description) {
+        description.appendText("\n" + EvalTreePrinter.print(((EvalTree)item).root));
       }
     };
   }
