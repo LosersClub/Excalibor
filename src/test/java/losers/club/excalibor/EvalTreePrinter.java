@@ -39,6 +39,9 @@ public class EvalTreePrinter
                     next.add(null);
                 } else {
                     String aa = "";
+                    if (n.uOp != null) {
+                      aa += n.uOp.getSymbol();
+                    }
                     if (n.op != null) {
                       aa += n.op.getSymbol();
                     }

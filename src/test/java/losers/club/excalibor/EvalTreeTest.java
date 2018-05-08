@@ -7,6 +7,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,20 +17,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import losers.club.excalibor.EvalTree.Node;
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.primitives.IntArgument;
-import losers.club.excalibor.argument.primitives.StringArgument;
+import losers.club.excalibor.argument.NotEvaluatable;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
-import losers.club.excalibor.operator.primitives.AddOperator;
-import losers.club.excalibor.operator.primitives.AndOperator;
-import losers.club.excalibor.operator.primitives.DivideOperator;
-import losers.club.excalibor.operator.primitives.GreaterThanOperator;
-import losers.club.excalibor.operator.primitives.LessThanEqOperator;
-import losers.club.excalibor.operator.primitives.ModuloOperator;
-import losers.club.excalibor.operator.primitives.MultiplyOperator;
-import losers.club.excalibor.operator.primitives.NegateOperator;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class EvalTreeTest {
   @Mock private Argument arg;
   @Mock private Operator op;
@@ -86,6 +78,14 @@ public class EvalTreeTest {
   }
   
   @Test
+  public void insertSingleUnary() {
+    tree.insert(uOp);
+    tree.insert(arg);
+    assertThat(tree.size(), is(1));
+    Assert.assertTrue(tree.valid());
+  }
+  
+  @Test
   public void insertOpOverOp() {
     tree.insert(arg);
     tree.insert(op);
@@ -105,54 +105,82 @@ public class EvalTreeTest {
     Assert.assertTrue(tree.valid());
   }
   
-  @Test(expected = UnsupportedOperationException.class)
-  public void openBracketOneArg() {
-    tree.insert(arg);
-    tree.openBracket();
-  }
-  
-  @Test(expected = UnsupportedOperationException.class)
-  public void openBracketAfterSecondArg() {
+  @Test
+  public void insertInlineUnary() {
     tree.insert(arg);
     tree.insert(op);
+    tree.insert(uOp);
     tree.insert(arg);
-    tree.openBracket();
-  }
-  
-  @Test
-  public void openBracketEmpty() {
-    tree.openBracket();
-    tree.closeBracket();
-    assertThat(tree.size(), is(0));
-    Assert.assertTrue(tree.valid());
-  }
-  
-  @Test
-  public void openBracketAfterOp() {
-    tree.insert(arg);
-    tree.insert(op);
-    tree.openBracket();
-    tree.insert(arg);
-    tree.closeBracket();
     assertThat(tree.size(), is(3));
     Assert.assertTrue(tree.valid());
   }
   
-  @Test(expected = UnsupportedOperationException.class)
-  public void closeBracketRoot() {
-    tree.closeBracket();
-  }
-  
-  @Test(expected = UnsupportedOperationException.class)
-  public void closeBracketNoOpen() {
-    tree.insert(arg);
-    tree.closeBracket();
+  @Test
+  public void priorityInsert() {
+    Operator op1 = mock(Operator.class);
+    Operator op2 = mock(Operator.class);
+    when(op1.priority()).thenReturn(1);
+    when(op1.getSymbol()).thenReturn("1");
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("2");
+    Argument arg1 = mock(Argument.class);
+    Argument arg2 = mock(Argument.class);
+    Argument arg3 = mock(Argument.class);
+    when(arg1.getValue()).thenReturn("a");
+    when(arg2.getValue()).thenReturn("b");
+    when(arg3.getValue()).thenReturn("c");
+    
+    tree.insert(arg1);
+    tree.insert(op1);
+    tree.insert(arg2);
+    tree.insert(op2);
+    tree.insert(arg3);
+    assertThat(tree.size(), is(5));
+    Assert.assertTrue(tree.valid());
+    
+    Node expected = newTree(newArgNode(arg1), simpleTree(arg2, arg3, op2), op1);
+    assertThat(tree, isSame(expected));
   }
   
   @Test
-  public void validEmpty() {
-    assertThat(tree.size(), is(0));
+  public void increasingPriorityInsert() {
+    Operator op1 = mock(Operator.class);
+    Operator op2 = mock(Operator.class);
+    Operator op3 = mock(Operator.class);
+    when(op1.priority()).thenReturn(1);
+    when(op1.getSymbol()).thenReturn("1");
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("2");
+    when(op3.priority()).thenReturn(3);
+    when(op3.getSymbol()).thenReturn("3");
+    Argument arg1 = mock(Argument.class);
+    Argument arg2 = mock(Argument.class);
+    Argument arg3 = mock(Argument.class);
+    Argument arg4 = mock(Argument.class);
+    when(arg1.getValue()).thenReturn("a");
+    when(arg2.getValue()).thenReturn("b");
+    when(arg3.getValue()).thenReturn("c");
+    when(arg4.getValue()).thenReturn("d");
+    
+    tree.insert(arg1);
+    tree.insert(op1);
+    tree.insert(arg2);
+    tree.insert(op2);
+    tree.insert(arg3);
+    tree.insert(op3);
+    tree.insert(arg4);
+    assertThat(tree.size(), is(7));
     Assert.assertTrue(tree.valid());
+    
+    Node expected = newTree(newArgNode(arg1), newTree(newArgNode(arg2),
+        simpleTree(arg3, arg4, op3), op2), op1);
+    assertThat(tree, isSame(expected));
+  }
+  
+  @Test
+  public void invalidEmpty() {
+    assertThat(tree.size(), is(0));
+    Assert.assertFalse(tree.valid());
   }
   
   @Test
@@ -163,139 +191,251 @@ public class EvalTreeTest {
   }
   
   @Test
-  public void validMultiple() {
-    tree.openBracket();
-    tree.insert(arg);
-    tree.insert(op);
-    tree.openBracket();
-    tree.insert(arg);
-    tree.closeBracket();
-    tree.closeBracket();
-    assertThat(tree.size(), is(3));
-    Assert.assertTrue(tree.valid());
-  }
-  
-  @Test
-  public void invalidOpenCountBracket() {
-    tree.openBracket();
-    Assert.assertFalse(tree.valid());
-  }
-  
-  @Test
-  public void invalidOpenBracket() {
-    tree.insert(arg);
-    tree.insert(op);
-    tree.openBracket();
-    tree.insert(arg);
-    Assert.assertFalse(tree.valid());
-  }
-  
-  @Test
   public void invalidHangingOp() {
     tree.insert(arg);
     tree.insert(op);
     Assert.assertFalse(tree.valid());
   }
   
+  @Test(expected = IllegalArgumentException.class)
+  public void insertInvalidTree() {
+    tree.insert(new EvalTree());
+  }
+  
   @Test
-  public void inlineBracket() {
-    StringArgument sArg = new StringArgument("arg");
-    AddOperator plus = new AddOperator();
+  public void insertTree() {
+    when(op.getSymbol()).thenReturn("op");
+    Argument arg1 = mock(Argument.class);
+    Argument arg2 = mock(Argument.class);
+    Argument arg3 = mock(Argument.class);
+    when(arg1.getValue()).thenReturn("a");
+    when(arg2.getValue()).thenReturn("b");
+    when(arg3.getValue()).thenReturn("c");
     
-    Node expected = new Node();
-    expected.op = plus;
-    Node leftTree = new Node();
-    leftTree.op = plus;
-    expected.left = leftTree;
-    Node rightTree = new Node();
-    rightTree.op = plus;
-    expected.right = rightTree;
-    leftTree.left = new Node();
-    leftTree.left.value = sArg;
-    leftTree.right = new Node();
-    leftTree.right.value = sArg;
-    rightTree.left = new Node();
-    rightTree.left.value = sArg;
-    rightTree.right = new Node();
-    rightTree.right.value = sArg;
+    tree.insert(arg1);
+    tree.insert(op);
+    EvalTree tree2 = new EvalTree();
+    tree2.insert(arg2);
+    tree2.insert(op);
+    tree2.insert(arg3);
+    tree.insert(tree2);
+    assertThat(tree.size(), is(5));
+    Assert.assertTrue(tree.valid());
     
-    
-    tree.insert(sArg);
-    tree.insert(plus);
-    tree.insert(sArg);
-    tree.insert(plus);
-    tree.openBracket();
-    tree.insert(sArg);
-    tree.insert(plus);
-    tree.insert(sArg);
-    tree.closeBracket();
+    Node expected = newTree(newArgNode(arg1), simpleTree(arg2, arg3, op), op);
     assertThat(tree, isSame(expected));
   }
   
   @Test
-  public void priorityTest() throws NotEvaluatableException {
-    IntArgument i = new IntArgument(1);
-    MultiplyOperator mult = new MultiplyOperator();
-    DivideOperator div = new DivideOperator();
-    NegateOperator neg = new NegateOperator();
-    AddOperator add = new AddOperator();
-    
-    Node expected = new Node();
-    expected.op = add;
-    expected.left = new Node();
-    expected.left.value = i;
-    Node subTree = new Node();
-    expected.right = subTree;
-    subTree.op = div;
-    Node leftTree = new Node();
-    subTree.left = leftTree;
-    leftTree.op = mult;
-    leftTree.left = new Node();
-    leftTree.left.value = i;
-    leftTree.right = new Node();
-    leftTree.right.value = i;
-    Node rightTree = new Node();
-    subTree.right = rightTree;
-    rightTree.op = neg;
-    rightTree.left = new Node();
-    rightTree.left.value = i;
-    rightTree.right = new Node();
-    rightTree.right.value = i;
-    
-    tree.insert(i,neg);
-    tree.insert(add);
-    tree.insert(i);
-    tree.insert(mult);
-    tree.insert(i);
-    tree.insert(new ModuloOperator());
-    tree.openBracket();
-    tree.insert(i);
-    tree.insert(neg);
-    tree.insert(i);
-    tree.closeBracket();
-    assertThat(tree, isSame(expected));
-//    System.out.println(EvalTreePrinter.print(tree.root));
-//    System.out.println(tree.evaluate().getValue());
+  public void insertTreeEmptyUnary() {
+    EvalTree test = new EvalTree();
+    test.insert(arg);
+    test.insert(op);
+    test.insert(arg);
+    tree.insert(uOp);
+    tree.insert(test);
+    assertThat(tree.size(), is(3));
+    Assert.assertTrue(tree.valid());
   }
   
-//   @Test
-//   public void priorityTest2() throws NotEvaluatableException {
-//     tree.insert(new IntArgument(1));
-//     tree.insert(new AddOperator());
-//     tree.insert(new IntArgument(4));
-//     tree.insert(new LessThanEqOperator());
-//     tree.insert(new IntArgument(0));
-//     tree.insert(new AndOperator());
-//     tree.insert(new IntArgument(1));
-//     tree.insert(new AddOperator());
-//     tree.insert(new IntArgument(2));
-//     tree.insert(new GreaterThanOperator());
-//     tree.insert(new IntArgument(0));
-//     System.out.println(EvalTreePrinter.print(tree.root));
-//     Argument out = tree.evalute();
-//     System.out.println(out.getValue());
-//   }
+  @Test
+  public void insertTreeUnary() {
+    when(op.getSymbol()).thenReturn("op");
+    when(uOp.getSymbol()).thenReturn("uOp ");
+    Argument arg1 = mock(Argument.class);
+    Argument arg2 = mock(Argument.class);
+    Argument arg3 = mock(Argument.class);
+    when(arg1.getValue()).thenReturn("a");
+    when(arg2.getValue()).thenReturn("b");
+    when(arg3.getValue()).thenReturn("c");
+    
+    tree.insert(arg1);
+    tree.insert(op);
+    tree.insert(uOp);
+    EvalTree tree2 = new EvalTree();
+    tree2.insert(arg2);
+    tree2.insert(op);
+    tree2.insert(arg3);
+    tree.insert(tree2);
+    assertThat(tree.size(), is(5));
+    Assert.assertTrue(tree.valid());
+    
+    Node expected = newTree(newArgNode(arg1), simpleTree(arg2, arg3, op), op);
+    expected.right.uOp = uOp;
+    assertThat(tree, isSame(expected));
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void insertTreeInvalid() {
+    tree.insert(arg);
+    EvalTree test = new EvalTree();
+    test.insert(arg);
+    tree.insert(test);
+  }
+  
+  @Test
+  public void avoidHeapifySubTree() {
+    when(op.getSymbol()).thenReturn("op");
+    Argument arg1 = mock(Argument.class);
+    Argument arg2 = mock(Argument.class);
+    Argument arg3 = mock(Argument.class);
+    when(arg1.getValue()).thenReturn("a");
+    when(arg2.getValue()).thenReturn("b");
+    when(arg3.getValue()).thenReturn("c");
+    
+    EvalTree test = new EvalTree();
+    test.insert(arg1);
+    test.insert(op);
+    test.insert(arg2);
+    tree.insert(test);
+    tree.insert(op);
+    tree.insert(arg3);
+    assertThat(tree.size(), is(5));
+    Assert.assertTrue(tree.valid());
 
+    Node expected = newTree(simpleTree(arg1, arg2, op), newArgNode(arg3), op);
+    assertThat(tree, isSame(expected));
+  }
+  
+  @Test(expected = NotEvaluatableException.class)
+  public void evaluateInvalid() {
+    tree.evaluate();
+  }
+  
+  @Test
+  public void evaluateSingleArg() {
+    tree.insert(arg);
+    assertThat(tree.size(), is(1));
+    assertThat(tree.evaluate(), is(arg));
+  }
+  
+  @Test
+  public void evaluateSingleArgUnary() {
+    Argument negArg = mock(Argument.class);
+    when(uOp.evaluate(arg)).thenReturn(negArg);
+    tree.insert(uOp);
+    tree.insert(arg);
+    assertThat(tree.size(), is(1));
+    assertThat(tree.evaluate(), is(negArg));
+    verify(uOp, times(1)).evaluate(arg);
+  }
+  
+  @Test(expected = NotEvaluatableException.class)
+  public void notEvaluableUnary() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    tree.insert(uOp);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(1));
+    tree.evaluate();
+  }
+  
+  @Test
+  public void evaluableUnary() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    when(nArg.isEvaluatable()).thenReturn(true);
+    when(uOp.evaluate(nArg)).thenReturn(arg);
+    tree.insert(uOp);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(1));
+    assertThat(tree.evaluate(), is(arg));
+    verify(uOp, times(1)).evaluate(nArg);
+  }
+  
+  @Test
+  public void evaluableOp() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    when(nArg.isEvaluatable()).thenReturn(true);
+    when(op.evaluate(nArg, nArg)).thenReturn(arg);
+    tree.insert(nArg);
+    tree.insert(op);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(3));
+    assertThat(tree.evaluate(), is(arg));
+    verify(op, times(1)).evaluate(nArg, nArg);
+  }
+  
+  @Test(expected = NotEvaluatableException.class)
+  public void notEvaluableOpLeft() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    tree.insert(nArg);
+    tree.insert(op);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(3));
+    tree.evaluate();
+  }
+  
+  @Test(expected = NotEvaluatableException.class)
+  public void notEvaluableOpRight() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(3));
+    tree.evaluate();
+  }
+  
+  @Test
+  public void evaluate() {
+    Argument newArg = mock(Argument.class);
+    when(op.evaluate(arg, arg)).thenReturn(newArg);
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(arg);
+    assertThat(tree.size(), is(3));
+    assertThat(tree.evaluate(), is(newArg));
+    verify(op, times(1)).evaluate(arg, arg);
+  }
+  
+  @Test
+  public void evaluate2() {
+    Argument negArg = mock(Argument.class);
+    Argument newArg = mock(Argument.class);
+    when(op.evaluate(arg, arg)).thenReturn(newArg);
+    when(uOp.evaluate(newArg)).thenReturn(negArg);
+    EvalTree test = new EvalTree();
+    test.insert(arg);
+    test.insert(op);
+    test.insert(arg);
+    tree.insert(uOp);
+    tree.insert(test);
+    assertThat(tree.size(), is(3));
+    assertThat(tree.evaluate(), is(negArg));
+    verify(op, times(1)).evaluate(arg, arg);
+    verify(uOp, times(1)).evaluate(newArg);
+  }
+  
+  @Test
+  public void heapifyValidTest() {
+    Operator op1 = mock(Operator.class);
+    Operator op2 = mock(Operator.class);
+    when(op1.priority()).thenReturn(1);
+    when(op2.priority()).thenReturn(2);
+    
+    tree.insert(arg);
+    tree.insert(op1);
+    tree.insert(arg);
+    tree.insert(op2);
+    Assert.assertFalse(tree.valid());
+  }
+  
+  private Node newArgNode(Argument arg) {
+    Node out = new Node();
+    out.value = arg;
+    return out;
+  }
+  
+  private Node newTree(Node left, Node right, Operator op) {
+    Node out = new Node();
+    out.op = op;
+    out.left = left;
+    out.right = right;
+    return out;
+  }
+  
+  private Node simpleTree(Argument left, Argument right, Operator op) {
+    return newTree(newArgNode(left), newArgNode(right), op);
+  }
+  
   private Matcher<EvalTree> isSame(Node expected) {
     return new BaseMatcher<EvalTree>() {
 
@@ -325,10 +465,13 @@ public class EvalTreeTest {
       return true;
     }
     
-    if (leftTree.op != rightTree.op || leftTree.value != rightTree.value) {
+    if (leftTree.op != rightTree.op || leftTree.value != rightTree.value ||
+        leftTree.uOp != rightTree.uOp) {
       return false;
     }
     
     return equals(leftTree.left, rightTree.left) && equals(leftTree.right, rightTree.right);
   }
+  
+  private static abstract class NotEvaluableArg implements Argument, NotEvaluatable { }
 }
