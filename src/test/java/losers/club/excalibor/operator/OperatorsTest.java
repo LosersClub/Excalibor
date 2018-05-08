@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import losers.club.excalibor.argument.Argument;
 import losers.club.excalibor.argument.primitives.BooleanArgument;
@@ -76,10 +77,14 @@ public class OperatorsTest {
 
   @Test
   public void testDivideOperator() {
+    IntArgument intArgThree = mock(IntArgument.class);
+    Mockito.when(intArgThree.getMathTypeValue()).thenReturn(1.);
     DivideOperator divideOp = new DivideOperator();
     Assert.assertTrue(divideOp.getSymbol().equals("/"));
-    divideOp.evaluate(intArgOne, intArgTwo);
-    verify(intArgOne, times(1)).divide(intArgTwo);
+    divideOp.evaluate(intArgOne, intArgThree);
+    divideOp.evaluate(intArgOne, stringArgOne);
+    verify(intArgOne, times(1)).divide(intArgThree);
+    verify(intArgOne, times(1)).divide(stringArgOne);
   }
 
   @Test
@@ -87,6 +92,7 @@ public class OperatorsTest {
     DivideOperator divideOp= new DivideOperator();
     Assert.assertTrue(exceptionHelper(() -> divideOp.evaluate(stringArgOne, intArgOne)));
     Assert.assertTrue(exceptionHelper(() -> divideOp.evaluate(boolArgOne, intArgOne)));
+    Assert.assertTrue(exceptionHelper(() -> divideOp.evaluate(intArgOne, intArgTwo)));
   }
 
   @Test
@@ -174,10 +180,14 @@ public class OperatorsTest {
 
   @Test
   public void testModuloOperator() {
+    IntArgument intArgThree = mock(IntArgument.class);
+    Mockito.when(intArgThree.getMathTypeValue()).thenReturn(1.);
     ModuloOperator modOp = new ModuloOperator();
     Assert.assertTrue(modOp.getSymbol().equals("%"));
-    modOp.evaluate(intArgOne, intArgTwo);
-    verify(intArgOne, times(1)).modulo(intArgTwo);
+    modOp.evaluate(intArgOne, intArgThree);
+    modOp.evaluate(intArgOne, stringArgOne);
+    verify(intArgOne, times(1)).modulo(intArgThree);
+    verify(intArgOne, times(1)).modulo(stringArgOne);
   }
 
   @Test
@@ -185,6 +195,7 @@ public class OperatorsTest {
     ModuloOperator modOp = new ModuloOperator();
     Assert.assertTrue(exceptionHelper(() -> modOp.evaluate(stringArgOne, intArgOne)));
     Assert.assertTrue(exceptionHelper(() -> modOp.evaluate(boolArgOne, intArgOne)));
+    Assert.assertTrue(exceptionHelper(() -> modOp.evaluate(intArgOne, intArgTwo)));
   }
 
   @Test
