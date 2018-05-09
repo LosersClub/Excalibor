@@ -1,7 +1,7 @@
 package losers.club.excalibor;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.NotEvaluatable;
+import losers.club.excalibor.argument.NotEvaluable;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
@@ -114,38 +114,29 @@ public class EvalTree {
     this.root = this.root == current ? node : this.root;
   }
   
-  public Argument evaluate() throws NotEvaluatableException {
+  public Argument evaluate() throws NotEvaluableException {
     if (!this.valid()) {
-      throw new NotEvaluatableException("EvalTree is not currently valid.");
+      throw new NotEvaluableException("EvalTree is not currently valid.");
     }
-    this.evaluate(this.root);
+    this.evaluate(this.root, true);
     return this.root.value;
   }
   
-  private void evaluate(Node node) {
+  public boolean precompute() {
+    if (!this.valid()) {
+      return false;
+    }
+    this.evaluate(this.root, false);
+    return this.root.isArg();
+  }
+  
+  private void evaluate(Node node, boolean doThrow) {
     if (node == null) {
       return;
     }
-    evaluate(node.left);
-    evaluate(node.right);
-    if (node.isOp()) {
-      if (node.left.value instanceof NotEvaluatable &&
-          !((NotEvaluatable)node.left.value).isEvaluatable()) {
-        throw new NotEvaluatableException(String.format("Unable to evaluate %s", node.left.value));
-      }
-      if (node.right.value instanceof NotEvaluatable &&
-          !((NotEvaluatable)node.right.value).isEvaluatable()) {
-        throw new NotEvaluatableException(String.format("Unable to evaluate %s", node.right.value));
-      }
-      node.value = node.op.evaluate(node.left.value, node.right.value);
-    }
-    
-    if (node.hasUnaryOp()) {
-      if (node.value instanceof NotEvaluatable && !((NotEvaluatable)node.value).isEvaluatable()) {
-        throw new NotEvaluatableException(String.format("Unable to evaluate %s",  node.value));
-      }
-      node.value = node.uOp.evaluate(node.value);
-    }
+    evaluate(node.left, doThrow);
+    evaluate(node.right, doThrow);
+    node.evaluate(doThrow);
   }
   
   @Override
@@ -198,6 +189,47 @@ public class EvalTree {
     
     boolean hasUnaryOp() {
       return uOp != null;
+    }
+    
+    void evaluate(boolean doThrow) {
+      if (this.isOp()) {
+        if (this.left.value instanceof NotEvaluable &&
+            !((NotEvaluable)this.left.value).isEvaluable()) {
+          if (!doThrow) {
+            return;
+          }
+          throw new NotEvaluableException(String.format("Unable to evaluate %s",
+              this.left.value));
+        }
+        if (this.right.value instanceof NotEvaluable &&
+            !((NotEvaluable)this.right.value).isEvaluable()) {
+          if (!doThrow) {
+            return;
+          }
+          throw new NotEvaluableException(String.format("Unable to evaluate %s",
+              this.right.value));
+        }
+        this.value = this.op.evaluate(this.left.value, this.right.value);
+      }
+      
+      if (this.hasUnaryOp()) {
+        if (this.value instanceof NotEvaluable && !((NotEvaluable)this.value).isEvaluable()) {
+          if (!doThrow) {
+            return;
+          }
+          throw new NotEvaluableException(String.format("Unable to evaluate %s",  this.value));
+        }
+        this.value = this.uOp.evaluate(this.value);
+      }
+      
+      if (this.isArg()) {
+        if (this.value instanceof NotEvaluable && !((NotEvaluable)this.value).isEvaluable()) {
+          if (!doThrow) {
+            return;
+          }
+          throw new NotEvaluableException(String.format("Unable to evaluate %s",  this.value));
+        }
+      }
     }
   }
 }

@@ -17,7 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import losers.club.excalibor.EvalTree.Node;
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.NotEvaluatable;
+import losers.club.excalibor.argument.NotEvaluable;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
@@ -297,7 +297,7 @@ public class EvalTreeTest {
     assertThat(tree, isSame(expected));
   }
   
-  @Test(expected = NotEvaluatableException.class)
+  @Test(expected = NotEvaluableException.class)
   public void evaluateInvalid() {
     tree.evaluate();
   }
@@ -320,7 +320,7 @@ public class EvalTreeTest {
     verify(uOp, times(1)).evaluate(arg);
   }
   
-  @Test(expected = NotEvaluatableException.class)
+  @Test(expected = NotEvaluableException.class)
   public void notEvaluableUnary() {
     NotEvaluableArg nArg = mock(NotEvaluableArg.class);
     tree.insert(uOp);
@@ -332,7 +332,7 @@ public class EvalTreeTest {
   @Test
   public void evaluableUnary() {
     NotEvaluableArg nArg = mock(NotEvaluableArg.class);
-    when(nArg.isEvaluatable()).thenReturn(true);
+    when(nArg.isEvaluable()).thenReturn(true);
     when(uOp.evaluate(nArg)).thenReturn(arg);
     tree.insert(uOp);
     tree.insert(nArg);
@@ -344,7 +344,7 @@ public class EvalTreeTest {
   @Test
   public void evaluableOp() {
     NotEvaluableArg nArg = mock(NotEvaluableArg.class);
-    when(nArg.isEvaluatable()).thenReturn(true);
+    when(nArg.isEvaluable()).thenReturn(true);
     when(op.evaluate(nArg, nArg)).thenReturn(arg);
     tree.insert(nArg);
     tree.insert(op);
@@ -354,7 +354,7 @@ public class EvalTreeTest {
     verify(op, times(1)).evaluate(nArg, nArg);
   }
   
-  @Test(expected = NotEvaluatableException.class)
+  @Test(expected = NotEvaluableException.class)
   public void notEvaluableOpLeft() {
     NotEvaluableArg nArg = mock(NotEvaluableArg.class);
     tree.insert(nArg);
@@ -364,7 +364,7 @@ public class EvalTreeTest {
     tree.evaluate();
   }
   
-  @Test(expected = NotEvaluatableException.class)
+  @Test(expected = NotEvaluableException.class)
   public void notEvaluableOpRight() {
     NotEvaluableArg nArg = mock(NotEvaluableArg.class);
     tree.insert(arg);
@@ -506,5 +506,5 @@ public class EvalTreeTest {
     };
   }
   
-  private static abstract class NotEvaluableArg implements Argument, NotEvaluatable { }
+  private static abstract class NotEvaluableArg implements Argument, NotEvaluable { }
 }
