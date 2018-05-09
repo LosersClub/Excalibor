@@ -418,6 +418,60 @@ public class EvalTreeTest {
     Assert.assertFalse(tree.valid());
   }
   
+  @SuppressWarnings("unlikely-arg-type")
+  @Test
+  public void equalsTest() {
+    Assert.assertFalse(tree.equals("test"));
+    Assert.assertTrue(tree.equals(tree));
+    Assert.assertTrue(tree.equals(new Node()));
+    EvalTree test = new EvalTree();
+    Assert.assertTrue(tree.equals(test));
+    test.insert(arg);
+    Assert.assertFalse(tree.equals(test));
+    Assert.assertFalse(test.equals(tree));
+    tree.insert(arg);
+    Assert.assertTrue(tree.equals(test));
+    test.insert(op);
+    Assert.assertFalse(tree.equals(test));
+    Assert.assertFalse(test.equals(tree));
+    tree.insert(op);
+    Assert.assertTrue(tree.equals(test));
+    test.insert(arg, uOp);
+    Assert.assertFalse(tree.equals(test));
+    Assert.assertFalse(test.equals(tree));
+    tree.insert(arg);
+    Assert.assertFalse(tree.equals(test));
+    Assert.assertFalse(test.equals(tree));
+  }
+  
+  @Test
+  public void equals2() {
+    Operator op2 = mock(Operator.class);
+    when(op.priority()).thenReturn(1);
+    when(op2.priority()).thenReturn(2);
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(arg);
+    tree.insert(op2);
+    tree.insert(arg);
+    EvalTree other = new EvalTree();
+    other.insert(arg);
+    other.insert(op);
+    other.insert(arg);
+    other.insert(op);
+    other.insert(arg);
+    Assert.assertFalse(tree.equals(other));
+    Assert.assertFalse(other.equals(tree));
+    EvalTree other2 = new EvalTree();
+    other2.insert(arg);
+    other2.insert(op);
+    other2.insert(arg);
+    other2.insert(op2);
+    other2.insert(arg);
+    Assert.assertTrue(tree.equals(other2));
+    Assert.assertTrue(other2.equals(tree));
+  }
+  
   private Node newArgNode(Argument arg) {
     Node out = new Node();
     out.value = arg;
@@ -436,41 +490,20 @@ public class EvalTreeTest {
     return newTree(newArgNode(left), newArgNode(right), op);
   }
   
-  private Matcher<EvalTree> isSame(Node expected) {
+  public static Matcher<EvalTree> isSame(Node expected) {
     return new BaseMatcher<EvalTree>() {
 
+      @SuppressWarnings("unlikely-arg-type")
       @Override
       public boolean matches(Object item) {
         EvalTree test = (EvalTree)item;
-        return EvalTreeTest.equals(test.root, expected);
+        return test.equals(expected);
       }
       @Override
       public void describeTo(Description description) {
         description.appendText("\n" + EvalTreePrinter.print(expected));
       }
-      @Override
-      public void describeMismatch(Object item, Description description) {
-        description.appendText("\n" + EvalTreePrinter.print(((EvalTree)item).root));
-      }
     };
-  }
-  
-  private static boolean equals(Node leftTree, Node rightTree) {
-    if ((leftTree == null && rightTree != null) ||
-        (leftTree != null && rightTree == null)) {
-      return false;
-    }
-    
-    if (leftTree == null && rightTree == null) {
-      return true;
-    }
-    
-    if (leftTree.op != rightTree.op || leftTree.value != rightTree.value ||
-        leftTree.uOp != rightTree.uOp) {
-      return false;
-    }
-    
-    return equals(leftTree.left, rightTree.left) && equals(leftTree.right, rightTree.right);
   }
   
   private static abstract class NotEvaluableArg implements Argument, NotEvaluatable { }

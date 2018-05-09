@@ -6,7 +6,7 @@ import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
 public class EvalTree {
-  Node root = null;
+  private Node root = null;
   private int size = 0;
   
   public EvalTree() {
@@ -148,7 +148,34 @@ public class EvalTree {
     }
   }
   
-  static class Node {
+  @Override
+  public boolean equals(Object that) {
+    if (this == that) {
+      return true;
+    }
+    if (that instanceof Node) {
+      return equals(this.root, (Node)that);
+    }
+    if (that instanceof EvalTree) {
+      return equals(this.root, ((EvalTree)that).root);
+    }
+    return false;
+  }
+  
+  private static boolean equals(Node leftTree, Node rightTree) {
+    if (leftTree == null || rightTree == null) {
+      return leftTree == null && rightTree == null;
+    }
+    
+    if (leftTree.op != rightTree.op || leftTree.value != rightTree.value ||
+        leftTree.uOp != rightTree.uOp) {
+      return false;
+    }
+    
+    return equals(leftTree.left, rightTree.left) && equals(leftTree.right, rightTree.right);
+  }
+  
+  static final class Node {
     Node left = null;
     Node right = null;
     
