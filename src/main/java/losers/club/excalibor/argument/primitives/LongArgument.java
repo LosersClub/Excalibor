@@ -1,15 +1,8 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.MethodList;
 
 public class LongArgument implements NumberArgument {
-  private static final MethodList methods = new MethodList(LongArgument.class);
-
-  public static MethodList getMethodList() {
-    return methods;
-  }
-
   private final long value;
 
   public LongArgument() {

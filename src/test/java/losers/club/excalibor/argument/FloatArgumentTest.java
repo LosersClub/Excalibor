@@ -13,11 +13,6 @@ public class FloatArgumentTest {
   private FloatArgument floatArgThree = new FloatArgument(2f);
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(FloatArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(floatArgOne.parse("'1.02f'"));
     Assert.assertNull(floatArgOne.parse("a12"));

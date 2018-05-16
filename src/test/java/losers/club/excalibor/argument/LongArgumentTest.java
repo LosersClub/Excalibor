@@ -11,12 +11,7 @@ public class LongArgumentTest {
   private LongArgument longArgOne = new LongArgument();
   private LongArgument longArgTwo = new LongArgument(3L);
   private LongArgument longArgThree = new LongArgument(2L);
-
-  @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(LongArgument.getMethodList());
-  }
-
+  
   @Test
   public void testParse() {
     Assert.assertNull(longArgOne.parse("'1.02'"));

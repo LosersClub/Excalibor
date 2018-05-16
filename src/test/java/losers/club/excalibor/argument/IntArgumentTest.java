@@ -13,11 +13,6 @@ public class IntArgumentTest {
   private IntArgument intArgThree = new IntArgument(2);
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(IntArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(intArgOne.parse("'1.02'"));
     Assert.assertNull(intArgOne.parse("a12"));

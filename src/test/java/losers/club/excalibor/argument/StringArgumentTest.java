@@ -11,11 +11,6 @@ public class StringArgumentTest {
   private StringArgument stringArgThree = new StringArgument("World!");
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(StringArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(stringArgOne.parse("\"abc"));
     Assert.assertNull(stringArgOne.parse("a"));

@@ -11,11 +11,6 @@ public class CharArgumentTest {
   private CharArgument charArgTwo = new CharArgument((char)1);
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(CharArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(charArgOne.parse("'u0000"));
     Assert.assertNull(charArgOne.parse("1"));

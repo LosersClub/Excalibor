@@ -11,11 +11,6 @@ public class ByteArgumentTest {
   private ByteArgument byteArgTwo = new ByteArgument((byte)1);
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(ByteArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(byteArgOne.parse("ab"));
     Assert.assertNull(byteArgOne.parse("123"));

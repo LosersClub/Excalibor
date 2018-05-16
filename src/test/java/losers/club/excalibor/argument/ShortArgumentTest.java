@@ -13,11 +13,6 @@ public class ShortArgumentTest {
   private ShortArgument shortArgThree = new ShortArgument((short)2);
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(ShortArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(shortArgOne.parse("'1.02'"));
     Assert.assertNull(shortArgOne.parse("a12"));

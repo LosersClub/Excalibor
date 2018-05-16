@@ -64,9 +64,4 @@ public class BooleanArgumentTest {
   public void testNotEquals() throws Exception {
     Assert.assertTrue((boolean)boolArgTrue.notEquals(boolArgFalse).getValue());
   }
-
-  @Test
-  public void testGetMethodList() throws Exception {
-    Assert.assertNotNull(BooleanArgument.getMethodList());
-  }
 }
