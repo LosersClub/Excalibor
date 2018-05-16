@@ -2,6 +2,7 @@ package losers.club.excalibor.argument;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import losers.club.excalibor.argument.primitives.IntArgument;
 import losers.club.excalibor.argument.primitives.StringArgument;
 
@@ -32,6 +33,12 @@ public class StringArgumentTest {
     stringArgParsed = stringArgOne.parse("\"\\t\\n\\b\\r\\f\\\'\\\"\\\\\"");
     Assert.assertTrue(stringArgParsed instanceof StringArgument
         && ((String)stringArgParsed.getValue()).equals("\t\n\b\r\f\'\"\\"));
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = stringArgOne.build("Test");
+    Assert.assertTrue(built instanceof StringArgument && ((String)built.getValue()).equals("Test"));
   }
 
   @Test(expected = IllegalArgumentException.class)

@@ -2,6 +2,7 @@ package losers.club.excalibor.argument;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import losers.club.excalibor.argument.primitives.CharArgument;
 import losers.club.excalibor.argument.primitives.IntArgument;
 import losers.club.excalibor.argument.primitives.StringArgument;
@@ -28,6 +29,12 @@ public class CharArgumentTest {
     charArgParsed = charArgOne.parse("'\\u0123'");
     Assert.assertTrue(charArgParsed instanceof CharArgument
         && (char)charArgParsed.getValue() == '\u0123');
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = charArgOne.build((char)2);
+    Assert.assertTrue(built instanceof CharArgument && (char)built.getValue() == (char)2);
   }
 
   @Test (expected = IllegalArgumentException.class)

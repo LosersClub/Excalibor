@@ -20,6 +20,12 @@ public class BooleanArgumentTest {
     Assert.assertTrue(boolArgParsed instanceof BooleanArgument
         && !((boolean)boolArgParsed.getValue()));
   }
+  
+  @Test
+  public void testBuild() {
+    Argument built = boolArgTrue.build(true);
+    Assert.assertTrue(built instanceof BooleanArgument && (boolean)built.getValue());
+  }
 
   @Test
   public void testNot() throws Exception {

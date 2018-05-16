@@ -2,6 +2,7 @@ package losers.club.excalibor.argument;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import losers.club.excalibor.argument.primitives.IntArgument;
 import losers.club.excalibor.argument.primitives.LongArgument;
 import losers.club.excalibor.argument.primitives.StringArgument;
@@ -30,6 +31,12 @@ public class LongArgumentTest {
     longArgParsed = longArgOne.parse("123456789101112L");
     Assert.assertTrue(longArgParsed instanceof LongArgument
         && (long)longArgParsed.getValue() == 123456789101112L);
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = longArgOne.build((long)6L);
+    Assert.assertTrue(built instanceof LongArgument && (long)built.getValue() == 6L);
   }
 
   @Test (expected = IllegalArgumentException.class)

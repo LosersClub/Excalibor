@@ -2,6 +2,7 @@ package losers.club.excalibor.argument;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import losers.club.excalibor.argument.primitives.FloatArgument;
 import losers.club.excalibor.argument.primitives.IntArgument;
 import losers.club.excalibor.argument.primitives.StringArgument;
@@ -29,6 +30,12 @@ public class FloatArgumentTest {
     floatArgParsed = floatArgOne.parse("81.46F");
     Assert.assertTrue(floatArgParsed instanceof FloatArgument
         && (float)floatArgParsed.getValue() == 81.46f);
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = floatArgOne.build((float)2.4);
+    Assert.assertTrue(built instanceof FloatArgument && (float)built.getValue() == 2.4f);
   }
 
   @Test (expected = IllegalArgumentException.class)

@@ -30,6 +30,12 @@ public class ShortArgumentTest {
     Assert.assertTrue(shortArgParsed instanceof ShortArgument
         && (short)shortArgParsed.getValue() == (short)32767);
   }
+  
+  @Test
+  public void testBuild() {
+    Argument built = shortArgOne.build((short)2);
+    Assert.assertTrue(built instanceof ShortArgument && (short)built.getValue() == 2);
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {

@@ -30,6 +30,12 @@ public class IntArgumentTest {
     Assert.assertTrue(intArgParsed instanceof IntArgument
         && (int)intArgParsed.getValue() == 1234567891);
   }
+  
+  @Test
+  public void testBuild() {
+    Argument built = intArgOne.build((int)8);
+    Assert.assertTrue(built instanceof IntArgument && (int)built.getValue() == 8);
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {
