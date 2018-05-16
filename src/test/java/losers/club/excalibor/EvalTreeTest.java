@@ -343,15 +343,18 @@ public class EvalTreeTest {
   
   @Test
   public void evaluableOp() {
+    Argument newArg = mock(Argument.class);
     NotEvaluableArg nArg = mock(NotEvaluableArg.class);
     when(nArg.isEvaluable()).thenReturn(true);
-    when(op.evaluate(nArg, nArg)).thenReturn(arg);
+    when(nArg.convert()).thenReturn(newArg);
+    when(op.evaluate(newArg, newArg)).thenReturn(arg);
     tree.insert(nArg);
     tree.insert(op);
     tree.insert(nArg);
     assertThat(tree.size(), is(3));
     assertThat(tree.evaluate(), is(arg));
-    verify(op, times(1)).evaluate(nArg, nArg);
+    assertThat(tree.size(), is(1));
+    verify(op, times(1)).evaluate(newArg, newArg);
   }
   
   @Test(expected = NotEvaluableException.class)
@@ -402,6 +405,36 @@ public class EvalTreeTest {
     assertThat(tree.evaluate(), is(negArg));
     verify(op, times(1)).evaluate(arg, arg);
     verify(uOp, times(1)).evaluate(newArg);
+  }
+  
+  @Test
+  public void evaluate3() {
+    Argument newArg = mock(Argument.class);
+    when(op.evaluate(arg, arg)).thenReturn(newArg);
+    when(uOp.evaluate(newArg)).thenReturn(null);
+    EvalTree test = new EvalTree();
+    test.insert(arg);
+    test.insert(op);
+    test.insert(arg);
+    tree.insert(uOp);
+    tree.insert(test);
+    assertThat(tree.size(), is(3));
+    assertThat(tree.evaluate(), is(nullValue()));
+    verify(op, times(1)).evaluate(arg, arg);
+    verify(uOp, times(1)).evaluate(newArg);
+  }
+  
+  @Test
+  public void evaluateNotEvaluableConvert() {
+    Argument newArg = mock(Argument.class);
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    when(nArg.isEvaluable()).thenReturn(true);
+    when(nArg.convert()).thenReturn(newArg);
+    
+    tree.insert(nArg);
+    assertThat(tree.size(), is(1));
+    assertThat(tree.evaluate(), is(newArg));
+    verify(nArg, times(1)).convert();
   }
   
   @Test
@@ -470,6 +503,64 @@ public class EvalTreeTest {
     other2.insert(arg);
     Assert.assertTrue(tree.equals(other2));
     Assert.assertTrue(other2.equals(tree));
+  }
+  
+  @Test
+  public void copyConstructor() {
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(arg);
+    EvalTree tree2 = new EvalTree(tree);
+    assertThat(tree2, isSame(tree.root));
+  }
+  
+  @Test
+  public void precomputeInvalid() {
+    assertThat(tree.precompute(), is(false));
+  }
+  
+  @Test
+  public void precompute() {
+    Argument newArg = mock(Argument.class);
+    when(op.evaluate(arg, arg)).thenReturn(newArg);
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(arg);
+    assertThat(tree.size(), is(3));
+    assertThat(tree.precompute(), is(true));
+    verify(op, times(1)).evaluate(arg, arg);
+    assertThat(tree.size(), is(1));
+  }
+  
+  @Test
+  public void notPrecomputeOpLeft() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    tree.insert(nArg);
+    tree.insert(op);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(3));
+    assertThat(tree.precompute(), is(false));
+  }
+  
+  @Test
+  public void notPrecomputeOpRight() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(3));
+    assertThat(tree.precompute(), is(false));
+    assertThat(tree.size(), is(3));
+  }
+  
+  @Test
+  public void notPrecomputeUnary() {
+    NotEvaluableArg nArg = mock(NotEvaluableArg.class);
+    tree.insert(uOp);
+    tree.insert(nArg);
+    assertThat(tree.size(), is(1));
+    assertThat(tree.precompute(), is(false));
+    assertThat(tree.size(), is(1));
   }
   
   private Node newArgNode(Argument arg) {

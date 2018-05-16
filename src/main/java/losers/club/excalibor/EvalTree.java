@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import losers.club.excalibor.argument.Argument;
 import losers.club.excalibor.argument.NotEvaluable;
-import losers.club.excalibor.argument.VariableArgument;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
@@ -131,21 +130,22 @@ public class EvalTree {
   }
   
   public boolean precompute() {
-    // TODO: Fix pointers when can evaluate.
     if (!this.valid()) {
       return false;
     }
     this.evaluate(this.root, true);
-    return this.root.isArg();
+    return this.root.isArg() && !(this.root.value instanceof NotEvaluable);
   }
   
-  private void evaluate(Node node, boolean doThrow) {
+  private void evaluate(Node node, boolean precompute) {
     if (node == null) {
       return;
     }
-    evaluate(node.left, doThrow);
-    evaluate(node.right, doThrow);
-    node.evaluate(doThrow);
+    evaluate(node.left, precompute);
+    evaluate(node.right, precompute);
+    if (node.evaluate(precompute)) {
+      this.size -= 2;
+    }
   }
   
   @Override
@@ -175,7 +175,7 @@ public class EvalTree {
     return equals(leftTree.left, rightTree.left) && equals(leftTree.right, rightTree.right);
   }
   
-  private static Node copy(Node source) {
+  private Node copy(Node source) {
     if (source == null) {
       return null;
     }
@@ -194,7 +194,7 @@ public class EvalTree {
     UnaryOperator uOp = null;
     boolean validStruct = false;
     
-    Node() { }
+    public Node() { }
     Node(Node other) {
       this.value = other.value;
       this.uOp = other.uOp;
@@ -233,26 +233,33 @@ public class EvalTree {
       return true;
     }
     
-    void evaluate(boolean precompute) {
+    boolean evaluate(boolean precompute) {
+      boolean evaluatedChildren = false;
       if (this.isOp()) {
         if (!evaluable(this.left.value, precompute)) {
-          return;
+          return false;
         }
         if (!evaluable(this.right.value, precompute)) {
-          return;
+          return false;
         }
         this.value = this.op.evaluate(this.left.value, this.right.value);
+        this.left = null;
+        this.right = null;
+        this.op = null;
+        evaluatedChildren = true;
       }
       if (this.hasUnaryOp()) {
         if (!evaluable(this.value, precompute)) {
-          return;
+          return false;
         }
         this.value = this.uOp.evaluate(this.value);
+        this.uOp = null;
       }
       evaluable(this.value, precompute);
-      if (!precompute && this.value instanceof VariableArgument) {
-        this.value = ((VariableArgument) value).convert();
+      if (!precompute && this.value instanceof NotEvaluable) {
+        this.value = ((NotEvaluable) value).convert();
       }
+      return evaluatedChildren;
     }
   }
 }
