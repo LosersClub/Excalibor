@@ -1,16 +1,28 @@
 package losers.club.excalibor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.primitives.BooleanArgument;
+import losers.club.excalibor.argument.primitives.ByteArgument;
+import losers.club.excalibor.argument.primitives.CharArgument;
+import losers.club.excalibor.argument.primitives.DoubleArgument;
+import losers.club.excalibor.argument.primitives.FloatArgument;
+import losers.club.excalibor.argument.primitives.IntArgument;
+import losers.club.excalibor.argument.primitives.LongArgument;
+import losers.club.excalibor.argument.primitives.ShortArgument;
+import losers.club.excalibor.argument.primitives.StringArgument;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
 public class ExpressionCompiler {
-  private final List<Argument> parsers;
+  public final List<Argument> parsers;
   private final Map<String, Operator> operators; // Change to String tree for better performance?
   
   // Property to try and minimize tree/prerun during compile.
@@ -20,6 +32,15 @@ public class ExpressionCompiler {
     // TODO: default/fallback parsers & operators?
     this.parsers = new ArrayList<Argument>();
     this.operators = new HashMap<String, Operator>();
+    
+    this.parsers.addAll(Arrays.asList(
+        new BooleanArgument(), new ByteArgument(), new CharArgument(),
+        new DoubleArgument(), new FloatArgument(), new IntArgument(),
+        new LongArgument(), new ShortArgument(), new StringArgument()));
+  }
+  
+  public Collection<Argument> getParsers() {
+    return Collections.unmodifiableList(this.parsers);
   }
   
   public void precompute(boolean value) {
@@ -146,11 +167,11 @@ public class ExpressionCompiler {
       throw new RuntimeException("Invalid Expression");
     }
     
-    Expression expr = new Expression(tree);
+//    Expression expr = new Expression(tree, null);
     if (this.canPrecompute) {
-      expr.precompute();
+//      expr.precompute();
     }
-    return expr;
+    return null;
   }
   
   private static boolean isSymbol(char c) {

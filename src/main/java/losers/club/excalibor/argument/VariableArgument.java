@@ -47,7 +47,7 @@ public class VariableArgument implements Argument, NotEvaluable {
       return null;
     }
     Argument out = null;
-    for (Argument parser : compiler.parsers) {
+    for (Argument parser : compiler.getParsers()) {
       if ((out = parser.convert(this)) != null) {
         return out;
       }
