@@ -24,6 +24,11 @@ public class LongArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new LongArgument((long)obj);
+  }
 
   @Override
   public Argument parse(String expression) {

@@ -1,16 +1,24 @@
 package losers.club.excalibor;
 
+import java.util.Objects;
+
 import losers.club.excalibor.argument.Argument;
 import losers.club.excalibor.argument.NotEvaluable;
+import losers.club.excalibor.argument.VariableArgument;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
 public class EvalTree {
-  private Node root = null;
+  Node root = null;
   private int size = 0;
   
   public EvalTree() {
     this.root = new Node();
+  }
+  
+  public EvalTree(EvalTree other) {
+    this.root = copy(other.root);
+    this.size = other.size;
   }
   
   public boolean valid() {
@@ -118,15 +126,16 @@ public class EvalTree {
     if (!this.valid()) {
       throw new NotEvaluableException("EvalTree is not currently valid.");
     }
-    this.evaluate(this.root, true);
+    this.evaluate(this.root, false);
     return this.root.value;
   }
   
   public boolean precompute() {
+    // TODO: Fix pointers when can evaluate.
     if (!this.valid()) {
       return false;
     }
-    this.evaluate(this.root, false);
+    this.evaluate(this.root, true);
     return this.root.isArg();
   }
   
@@ -158,12 +167,22 @@ public class EvalTree {
       return leftTree == null && rightTree == null;
     }
     
-    if (leftTree.op != rightTree.op || leftTree.value != rightTree.value ||
-        leftTree.uOp != rightTree.uOp) {
+    if (leftTree.op != rightTree.op || leftTree.uOp != rightTree.uOp ||
+        !Objects.equals(leftTree.value, rightTree.value)) {
       return false;
     }
     
     return equals(leftTree.left, rightTree.left) && equals(leftTree.right, rightTree.right);
+  }
+  
+  private static Node copy(Node source) {
+    if (source == null) {
+      return null;
+    }
+    Node node = new Node(source);
+    node.left = copy(source.left);
+    node.right = copy(source.right);
+    return node;
   }
   
   static final class Node {
@@ -174,6 +193,14 @@ public class EvalTree {
     Operator op = null;
     UnaryOperator uOp = null;
     boolean validStruct = false;
+    
+    Node() { }
+    Node(Node other) {
+      this.value = other.value;
+      this.uOp = other.uOp;
+      this.op = other.op;
+      this.validStruct = other.validStruct;
+    }
     
     boolean isEmpty() {
       return value == null && op == null;
@@ -191,44 +218,40 @@ public class EvalTree {
       return uOp != null;
     }
     
-    void evaluate(boolean doThrow) {
-      if (this.isOp()) {
-        if (this.left.value instanceof NotEvaluable &&
-            !((NotEvaluable)this.left.value).isEvaluable()) {
-          if (!doThrow) {
-            return;
-          }
-          throw new NotEvaluableException(String.format("Unable to evaluate %s",
-              this.left.value));
+    static boolean evaluable(Argument arg, boolean precompute) {
+      if (arg == null) {
+        return false;
+      }
+      if (arg instanceof NotEvaluable) {
+        if (precompute) {
+          return false;
         }
-        if (this.right.value instanceof NotEvaluable &&
-            !((NotEvaluable)this.right.value).isEvaluable()) {
-          if (!doThrow) {
-            return;
-          }
-          throw new NotEvaluableException(String.format("Unable to evaluate %s",
-              this.right.value));
+        if (!((NotEvaluable)arg).isEvaluable()) {
+          throw new NotEvaluableException(String.format("Unable to evaluate %s", arg));
+        } 
+      }
+      return true;
+    }
+    
+    void evaluate(boolean precompute) {
+      if (this.isOp()) {
+        if (!evaluable(this.left.value, precompute)) {
+          return;
+        }
+        if (!evaluable(this.right.value, precompute)) {
+          return;
         }
         this.value = this.op.evaluate(this.left.value, this.right.value);
       }
-      
       if (this.hasUnaryOp()) {
-        if (this.value instanceof NotEvaluable && !((NotEvaluable)this.value).isEvaluable()) {
-          if (!doThrow) {
-            return;
-          }
-          throw new NotEvaluableException(String.format("Unable to evaluate %s",  this.value));
+        if (!evaluable(this.value, precompute)) {
+          return;
         }
         this.value = this.uOp.evaluate(this.value);
       }
-      
-      if (this.isArg()) {
-        if (this.value instanceof NotEvaluable && !((NotEvaluable)this.value).isEvaluable()) {
-          if (!doThrow) {
-            return;
-          }
-          throw new NotEvaluableException(String.format("Unable to evaluate %s",  this.value));
-        }
+      evaluable(this.value, precompute);
+      if (!precompute && this.value instanceof VariableArgument) {
+        this.value = ((VariableArgument) value).convert();
       }
     }
   }

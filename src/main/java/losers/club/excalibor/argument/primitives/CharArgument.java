@@ -24,6 +24,12 @@ public class CharArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new CharArgument((char)obj);
+  }
+  
   @Override
   public Argument parse(String expression) {
     if (expression.startsWith("'") && expression.endsWith("'")) {

@@ -24,6 +24,11 @@ public class FloatArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new FloatArgument((float)obj);
+  }
 
   @Override
   public Argument parse(String expression) {

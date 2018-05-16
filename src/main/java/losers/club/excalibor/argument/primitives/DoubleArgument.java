@@ -25,6 +25,11 @@ public class DoubleArgument implements NumberArgument{
   public Object getValue() {
     return value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new DoubleArgument((double)obj);
+  }
 
   @Override
   public Argument parse(String expression) {

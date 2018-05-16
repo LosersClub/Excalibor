@@ -24,6 +24,11 @@ public class ByteArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new ByteArgument((byte)obj);
+  }
 
   @Override
   public Argument parse(String expression) {

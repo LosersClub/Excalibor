@@ -24,6 +24,11 @@ public class ShortArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new ShortArgument((short)obj);
+  }
 
   @Override
   public Argument parse(String expression) {

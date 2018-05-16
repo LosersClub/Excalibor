@@ -19,6 +19,11 @@ public class BooleanArgument implements LogicalArgument {
   public BooleanArgument(boolean value) {
     this.value = value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new BooleanArgument((boolean)obj);
+  }
 
   @Override
   public BooleanArgument not() {
