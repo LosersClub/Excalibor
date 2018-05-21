@@ -23,7 +23,7 @@ public class VariableArgument implements Argument, NotEvaluable {
   
   public void setValue(Object obj) {
     this.obj = obj;
-    this.evaluable = evaluable || this.obj != null;
+    this.evaluable = this.obj != null;
   }
 
   @Override
@@ -41,7 +41,7 @@ public class VariableArgument implements Argument, NotEvaluable {
     throw new UnsupportedOperationException("No builder exists for VariableArgument");
   }
   
-  // Make override in NotEvaluable?
+  @Override
   public Argument convert() {
     if (this.getValue() == null) {
       return null;

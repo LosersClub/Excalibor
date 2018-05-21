@@ -42,7 +42,7 @@ public class VariableArgumentTest {
     this.vArg.setValue(newObj);
     Assert.assertTrue(this.vArg.isEvaluable());
     this.vArg.setValue(null);
-    Assert.assertTrue(this.vArg.isEvaluable());
+    Assert.assertFalse(this.vArg.isEvaluable());
   }
   
   @Test
