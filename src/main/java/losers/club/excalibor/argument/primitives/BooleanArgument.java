@@ -1,15 +1,8 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.MethodList;
 
 public class BooleanArgument implements LogicalArgument {
-  private static final MethodList methods = new MethodList(BooleanArgument.class);
-
-  public static MethodList getMethodList() {
-    return methods;
-  }
-
   private final boolean value;
 
   public BooleanArgument() {
@@ -18,6 +11,11 @@ public class BooleanArgument implements LogicalArgument {
 
   public BooleanArgument(boolean value) {
     this.value = value;
+  }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new BooleanArgument((boolean)obj);
   }
 
   @Override

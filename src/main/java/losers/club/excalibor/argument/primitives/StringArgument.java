@@ -1,15 +1,8 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.MethodList;
 
 public class StringArgument implements ComparableArgument{
-  private static final MethodList methods = new MethodList(StringArgument.class);
-
-  public static MethodList getMethodList() {
-    return methods;
-  }
-
   private final String value;
 
   public StringArgument() {
@@ -23,6 +16,11 @@ public class StringArgument implements ComparableArgument{
   @Override
   public Object getValue() {
     return value;
+  }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new StringArgument((String)obj);
   }
 
   @Override

@@ -1,15 +1,8 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.MethodList;
 
 public class FloatArgument implements NumberArgument {
-  private static final MethodList methods = new MethodList(FloatArgument.class);
-
-  public static MethodList getMethodList() {
-    return methods;
-  }
-
   private final float value;
 
   public FloatArgument() {
@@ -23,6 +16,11 @@ public class FloatArgument implements NumberArgument {
   @Override
   public Object getValue() {
     return value;
+  }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new FloatArgument((float)obj);
   }
 
   @Override

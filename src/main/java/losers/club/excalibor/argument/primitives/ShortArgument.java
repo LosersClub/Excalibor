@@ -1,15 +1,8 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.MethodList;
 
 public class ShortArgument implements NumberArgument {
-  private static final MethodList methods = new MethodList(ShortArgument.class);
-
-  public static MethodList getMethodList() {
-    return methods;
-  }
-
   private final short value;
 
   public ShortArgument() {
@@ -23,6 +16,11 @@ public class ShortArgument implements NumberArgument {
   @Override
   public Object getValue() {
     return value;
+  }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new ShortArgument((short)obj);
   }
 
   @Override

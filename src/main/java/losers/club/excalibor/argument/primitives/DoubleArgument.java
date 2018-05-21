@@ -1,16 +1,8 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.MethodList;
 
 public class DoubleArgument implements NumberArgument{
-
-  private static final MethodList methods = new MethodList(DoubleArgument.class);
-
-  public static MethodList getMethodList() {
-    return methods;
-  }
-
   private final double value;
 
   public DoubleArgument() {
@@ -24,6 +16,11 @@ public class DoubleArgument implements NumberArgument{
   @Override
   public Object getValue() {
     return value;
+  }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new DoubleArgument((double)obj);
   }
 
   @Override

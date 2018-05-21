@@ -1,16 +1,23 @@
 package losers.club.excalibor;
 
+import java.util.Objects;
+
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.NotEvaluatable;
+import losers.club.excalibor.argument.NotEvaluable;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
-public class EvalTree {
-  Node root = null;
+public final class EvalTree {
+  private Node root = null;
   private int size = 0;
   
   public EvalTree() {
     this.root = new Node();
+  }
+  
+  public EvalTree(EvalTree other) {
+    this.root = copy(other.root);
+    this.size = other.size;
   }
   
   public boolean valid() {
@@ -23,6 +30,10 @@ public class EvalTree {
   
   public int size() {
     return this.size;
+  }
+  
+  Node getRoot() {
+    return root;
   }
   
   public void insert(Argument arg) {
@@ -114,41 +125,71 @@ public class EvalTree {
     this.root = this.root == current ? node : this.root;
   }
   
-  public Argument evaluate() throws NotEvaluatableException {
+  public Argument evaluate() throws NotEvaluableException {
     if (!this.valid()) {
-      throw new NotEvaluatableException("EvalTree is not currently valid.");
+      throw new NotEvaluableException("EvalTree is not currently valid.");
     }
-    this.evaluate(this.root);
+    this.evaluate(this.root, false);
     return this.root.value;
   }
   
-  private void evaluate(Node node) {
+  public boolean precompute() {
+    if (!this.valid()) {
+      return false;
+    }
+    this.evaluate(this.root, true);
+    return this.root.isArg() && !(this.root.value instanceof NotEvaluable);
+  }
+  
+  private void evaluate(Node node, boolean precompute) {
     if (node == null) {
       return;
     }
-    evaluate(node.left);
-    evaluate(node.right);
-    if (node.isOp()) {
-      if (node.left.value instanceof NotEvaluatable &&
-          !((NotEvaluatable)node.left.value).isEvaluatable()) {
-        throw new NotEvaluatableException(String.format("Unable to evaluate %s", node.left.value));
-      }
-      if (node.right.value instanceof NotEvaluatable &&
-          !((NotEvaluatable)node.right.value).isEvaluatable()) {
-        throw new NotEvaluatableException(String.format("Unable to evaluate %s", node.right.value));
-      }
-      node.value = node.op.evaluate(node.left.value, node.right.value);
-    }
-    
-    if (node.hasUnaryOp()) {
-      if (node.value instanceof NotEvaluatable && !((NotEvaluatable)node.value).isEvaluatable()) {
-        throw new NotEvaluatableException(String.format("Unable to evaluate %s",  node.value));
-      }
-      node.value = node.uOp.evaluate(node.value);
+    evaluate(node.left, precompute);
+    evaluate(node.right, precompute);
+    if (node.evaluate(precompute)) {
+      this.size -= 2;
     }
   }
   
-  static class Node {
+  @Override
+  public boolean equals(Object that) {
+    if (this == that) {
+      return true;
+    }
+    if (that instanceof Node) {
+      return equals(this.root, (Node)that);
+    }
+    if (that instanceof EvalTree) {
+      return equals(this.root, ((EvalTree)that).root);
+    }
+    return false;
+  }
+  
+  private static boolean equals(Node leftTree, Node rightTree) {
+    if (leftTree == null || rightTree == null) {
+      return leftTree == null && rightTree == null;
+    }
+    
+    if (leftTree.op != rightTree.op || leftTree.uOp != rightTree.uOp ||
+        !Objects.equals(leftTree.value, rightTree.value)) {
+      return false;
+    }
+    
+    return equals(leftTree.left, rightTree.left) && equals(leftTree.right, rightTree.right);
+  }
+  
+  private Node copy(Node source) {
+    if (source == null) {
+      return null;
+    }
+    Node node = new Node(source);
+    node.left = copy(source.left);
+    node.right = copy(source.right);
+    return node;
+  }
+  
+  static final class Node {
     Node left = null;
     Node right = null;
     
@@ -156,6 +197,14 @@ public class EvalTree {
     Operator op = null;
     UnaryOperator uOp = null;
     boolean validStruct = false;
+    
+    public Node() { }
+    Node(Node other) {
+      this.value = other.value;
+      this.uOp = other.uOp;
+      this.op = other.op;
+      this.validStruct = other.validStruct;
+    }
     
     boolean isEmpty() {
       return value == null && op == null;
@@ -171,6 +220,50 @@ public class EvalTree {
     
     boolean hasUnaryOp() {
       return uOp != null;
+    }
+    
+    static boolean evaluable(Argument arg, boolean precompute) {
+      if (arg == null) {
+        return false;
+      }
+      if (arg instanceof NotEvaluable) {
+        if (precompute) {
+          return false;
+        }
+        if (!((NotEvaluable)arg).isEvaluable()) {
+          throw new NotEvaluableException(String.format("Unable to evaluate %s", arg));
+        } 
+      }
+      return true;
+    }
+    
+    boolean evaluate(boolean precompute) {
+      boolean evaluatedChildren = false;
+      if (this.isOp()) {
+        if (!evaluable(this.left.value, precompute)) {
+          return false;
+        }
+        if (!evaluable(this.right.value, precompute)) {
+          return false;
+        }
+        this.value = this.op.evaluate(this.left.value, this.right.value);
+        this.left = null;
+        this.right = null;
+        this.op = null;
+        evaluatedChildren = true;
+      }
+      if (this.hasUnaryOp()) {
+        if (!evaluable(this.value, precompute)) {
+          return false;
+        }
+        this.value = this.uOp.evaluate(this.value);
+        this.uOp = null;
+      }
+      evaluable(this.value, precompute);
+      if (!precompute && this.value instanceof NotEvaluable) {
+        this.value = ((NotEvaluable) value).convert();
+      }
+      return evaluatedChildren;
     }
   }
 }

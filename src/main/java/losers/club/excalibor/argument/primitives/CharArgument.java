@@ -1,15 +1,8 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.MethodList;
 
 public class CharArgument implements NumberArgument {
-  private static final MethodList methods = new MethodList(CharArgument.class);
-
-  public static MethodList getMethodList() {
-    return methods;
-  }
-
   private final char value;
 
   public CharArgument() {
@@ -24,6 +17,12 @@ public class CharArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
+  
+  @Override
+  public Argument build(Object obj) {
+    return new CharArgument((char)obj);
+  }
+  
   @Override
   public Argument parse(String expression) {
     if (expression.startsWith("'") && expression.endsWith("'")) {
