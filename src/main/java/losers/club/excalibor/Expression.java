@@ -46,15 +46,15 @@ public final class Expression {
     try {
       return typeOf.cast(out = this.evaluate());
     } catch (ClassCastException e) {
-      throw new RuntimeException(String.format("This expression returns '%s' but '%s' was the "
+      throw new ClassCastException(String.format("This expression returns '%s' but '%s' was the "
           + "expected type", out.getClass(), typeOf));
     }
   }
   
   public void setVariable(String name, Object value) {
     if (!variables.containsKey(name)) {
-      throw new RuntimeException(String.format("%s does not exist as a variable in this expression",
-          name));
+      throw new IllegalArgumentException(String.format("%s does not exist as a variable in this "
+          + "expression", name));
     }
     variables.get(name).setValue(value);
   }

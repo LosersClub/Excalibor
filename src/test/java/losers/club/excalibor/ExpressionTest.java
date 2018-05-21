@@ -47,7 +47,7 @@ public class ExpressionTest {
     assertThat(expr.evaluate(String.class), is("arg"));
   }
   
-  @Test(expected = RuntimeException.class)
+  @Test(expected = ClassCastException.class)
   public void evaluateBadCast() {
     tree.insert(arg);
     Expression expr = new Expression(tree);
@@ -79,7 +79,7 @@ public class ExpressionTest {
     verify(nArg, times(1)).convert();
   }
   
-  @Test(expected = RuntimeException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void setVariableDoesntExist() {
     HashMap<String, Object> vars = new HashMap<String, Object>();
     vars.put("x", null);
