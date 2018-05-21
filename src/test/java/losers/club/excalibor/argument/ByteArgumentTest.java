@@ -2,6 +2,7 @@ package losers.club.excalibor.argument;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import losers.club.excalibor.argument.primitives.ByteArgument;
 import losers.club.excalibor.argument.primitives.IntArgument;
 import losers.club.excalibor.argument.primitives.StringArgument;
@@ -9,11 +10,6 @@ import losers.club.excalibor.argument.primitives.StringArgument;
 public class ByteArgumentTest {
   private ByteArgument byteArgOne = new ByteArgument();
   private ByteArgument byteArgTwo = new ByteArgument((byte)1);
-
-  @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(ByteArgument.getMethodList());
-  }
 
   @Test
   public void testParse() {
@@ -27,6 +23,12 @@ public class ByteArgumentTest {
     byteArgParsed = byteArgOne.parse("123B");
     Assert.assertTrue(byteArgParsed instanceof ByteArgument
         && (byte)byteArgParsed.getValue() == (byte)123);
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = byteArgOne.build((byte)2);
+    Assert.assertTrue(built instanceof ByteArgument && (byte)built.getValue() == (byte)2);
   }
 
   @Test (expected = IllegalArgumentException.class)

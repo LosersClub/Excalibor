@@ -2,6 +2,8 @@ package losers.club.excalibor.argument;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+
 import losers.club.excalibor.argument.primitives.BooleanArgument;
 import losers.club.excalibor.argument.primitives.IntArgument;
 
@@ -19,6 +21,24 @@ public class BooleanArgumentTest {
     boolArgParsed = boolArgTrue.parse("false");
     Assert.assertTrue(boolArgParsed instanceof BooleanArgument
         && !((boolean)boolArgParsed.getValue()));
+  }
+  
+  @Test
+  public void testConvert() {
+    VariableArgument vArg = Mockito.mock(VariableArgument.class);
+    Mockito.when(vArg.getValue()).thenReturn(true);
+    Argument arg = boolArgTrue.convert(vArg);
+    Assert.assertTrue(arg instanceof BooleanArgument && (boolean)arg.getValue());
+    Mockito.when(vArg.getValue()).thenReturn(null);
+    Assert.assertTrue(boolArgTrue.convert(vArg) == null);
+    Mockito.when(vArg.getValue()).thenReturn(new Object());
+    Assert.assertTrue(boolArgTrue.convert(vArg) == null);
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = boolArgTrue.build(true);
+    Assert.assertTrue(built instanceof BooleanArgument && (boolean)built.getValue());
   }
 
   @Test
@@ -63,10 +83,5 @@ public class BooleanArgumentTest {
   @Test
   public void testNotEquals() throws Exception {
     Assert.assertTrue((boolean)boolArgTrue.notEquals(boolArgFalse).getValue());
-  }
-
-  @Test
-  public void testGetMethodList() throws Exception {
-    Assert.assertNotNull(BooleanArgument.getMethodList());
   }
 }

@@ -13,11 +13,6 @@ public class ShortArgumentTest {
   private ShortArgument shortArgThree = new ShortArgument((short)2);
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(ShortArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(shortArgOne.parse("'1.02'"));
     Assert.assertNull(shortArgOne.parse("a12"));
@@ -34,6 +29,12 @@ public class ShortArgumentTest {
     shortArgParsed = shortArgOne.parse("32767S");
     Assert.assertTrue(shortArgParsed instanceof ShortArgument
         && (short)shortArgParsed.getValue() == (short)32767);
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = shortArgOne.build((short)2);
+    Assert.assertTrue(built instanceof ShortArgument && (short)built.getValue() == 2);
   }
 
   @Test (expected = IllegalArgumentException.class)

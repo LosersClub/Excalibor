@@ -13,11 +13,6 @@ public class IntArgumentTest {
   private IntArgument intArgThree = new IntArgument(2);
 
   @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(IntArgument.getMethodList());
-  }
-
-  @Test
   public void testParse() {
     Assert.assertNull(intArgOne.parse("'1.02'"));
     Assert.assertNull(intArgOne.parse("a12"));
@@ -34,6 +29,12 @@ public class IntArgumentTest {
     intArgParsed = intArgOne.parse("1234567891");
     Assert.assertTrue(intArgParsed instanceof IntArgument
         && (int)intArgParsed.getValue() == 1234567891);
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = intArgOne.build((int)8);
+    Assert.assertTrue(built instanceof IntArgument && (int)built.getValue() == 8);
   }
 
   @Test (expected = IllegalArgumentException.class)

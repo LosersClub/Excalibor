@@ -2,6 +2,7 @@ package losers.club.excalibor.argument;
 
 import org.junit.Assert;
 import org.junit.Test;
+
 import losers.club.excalibor.argument.primitives.DoubleArgument;
 import losers.club.excalibor.argument.primitives.IntArgument;
 import losers.club.excalibor.argument.primitives.StringArgument;
@@ -11,11 +12,6 @@ public class DoubleArgumentTest {
   private DoubleArgument doubleArgOne = new DoubleArgument();
   private DoubleArgument doubleArgTwo = new DoubleArgument(1.5);
   private DoubleArgument doubleArgThree = new DoubleArgument(2);
-
-  @Test
-  public void testGetMethodList() {
-    Assert.assertNotNull(DoubleArgument.getMethodList());
-  }
 
   @Test
   public void testParse() {
@@ -33,6 +29,12 @@ public class DoubleArgumentTest {
     doubleArgParsed = doubleArgOne.parse("81.46");
     Assert.assertTrue(doubleArgParsed instanceof DoubleArgument
         && (double)doubleArgParsed.getValue() == 81.46);
+  }
+  
+  @Test
+  public void testBuild() {
+    Argument built = doubleArgOne.build((double)2.4);
+    Assert.assertTrue(built instanceof DoubleArgument && (double)built.getValue() == 2.4);
   }
 
   @Test (expected = IllegalArgumentException.class)
