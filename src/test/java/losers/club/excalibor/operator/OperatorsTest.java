@@ -29,6 +29,7 @@ import losers.club.excalibor.operator.primitives.XOrOperator;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OperatorsTest {
@@ -48,10 +49,14 @@ public class OperatorsTest {
   public void testAddOperator() {
     AddOperator addOp = new AddOperator();
     Assert.assertTrue(addOp.getSymbol().equals("+"));
+    when(stringArgTwo.getValue()).thenReturn("hello");
+    when(intArgOne.getValue()).thenReturn(2);
     addOp.evaluate(intArgOne, intArgTwo);
     verify(intArgOne, times(1)).add(intArgTwo);
     addOp.evaluate(stringArgOne, stringArgTwo);
-    verify(stringArgOne, times(1)).concat(stringArgTwo);
+    verify(stringArgOne, times(1)).concat(Mockito.any(StringArgument.class));
+    Argument result = addOp.evaluate(intArgOne, stringArgTwo);
+    Assert.assertTrue(result.getValue().equals("2hello"));
   }
 
   @Test
@@ -307,7 +312,7 @@ public class OperatorsTest {
   public void testOperatorHashCode() {
     Assert.assertTrue(new NegateOperator().hashCode() == "-".hashCode());
   }
-  
+
   @Test
   public void testOperatorPriority() {
     Assert.assertTrue(new AddOperator().priority() == 11);
