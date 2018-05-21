@@ -8,7 +8,7 @@ import losers.club.excalibor.EvalTree.Node;
 import losers.club.excalibor.argument.NotEvaluable;
 import losers.club.excalibor.argument.VariableArgument;
 
-public class Expression {
+public final class Expression {
   private final EvalTree tree;
   private final Map<String, VariableArgument> variables;
 
@@ -33,6 +33,12 @@ public class Expression {
   public Object evaluate(Map<String, Object> vars) throws NotEvaluableException {
     vars.forEach(this::setVariable);
     return this.evaluate();
+  }
+  
+  public <T> T evaluate(Map<String, Object> vars, Class<? extends T> typeOf)
+      throws NotEvaluableException {
+    vars.forEach(this::setVariable);
+    return this.evaluate(typeOf);
   }
   
   public <T> T evaluate(Class<? extends T> typeOf) throws NotEvaluableException {

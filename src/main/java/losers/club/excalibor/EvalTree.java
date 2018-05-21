@@ -7,7 +7,7 @@ import losers.club.excalibor.argument.NotEvaluable;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
-public class EvalTree {
+public final class EvalTree {
   private Node root = null;
   private int size = 0;
   

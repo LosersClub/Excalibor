@@ -88,7 +88,7 @@ public class ExpressionTest {
   }
   
   @Test
-  public void setVariableEvluate() {
+  public void setVariableEvaluate() {
     VariableArgument vArg = mock(VariableArgument.class);
     Object obj = new Object();
     HashMap<String, Object> vars = new HashMap<String, Object>();
@@ -97,6 +97,19 @@ public class ExpressionTest {
     tree.insert(arg);
     Expression expr = new Expression(tree, variables);
     expr.evaluate(vars);
+    verify(vArg, times(1)).setValue(obj);
+  }
+  
+  @Test
+  public void setVariableEvaluateCast() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    Object obj = new Object();
+    HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("x", obj);
+    variables.put("x", vArg);
+    tree.insert(arg);
+    Expression expr = new Expression(tree, variables);
+    expr.evaluate(vars, String.class);
     verify(vArg, times(1)).setValue(obj);
   }
   
