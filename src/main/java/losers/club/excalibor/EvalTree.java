@@ -8,7 +8,7 @@ import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
 
 public class EvalTree {
-  Node root = null;
+  private Node root = null;
   private int size = 0;
   
   public EvalTree() {
@@ -30,6 +30,10 @@ public class EvalTree {
   
   public int size() {
     return this.size;
+  }
+  
+  Node getRoot() {
+    return root;
   }
   
   public void insert(Argument arg) {

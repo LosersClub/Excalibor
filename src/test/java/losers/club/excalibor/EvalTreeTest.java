@@ -511,7 +511,7 @@ public class EvalTreeTest {
     tree.insert(op);
     tree.insert(arg);
     EvalTree tree2 = new EvalTree(tree);
-    assertThat(tree2, isSame(tree.root));
+    assertThat(tree2, isSame(tree.getRoot()));
   }
   
   @Test
