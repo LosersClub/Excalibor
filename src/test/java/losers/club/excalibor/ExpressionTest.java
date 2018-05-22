@@ -31,6 +31,7 @@ public class ExpressionTest {
   public void before() {
     when(arg.getValue()).thenReturn("arg");
     when(op.getSymbol()).thenReturn("+");
+    when(op.priority()).thenReturn(1);
   }
   
   @Test
@@ -155,23 +156,29 @@ public class ExpressionTest {
   
   @Test
   public void toStringDepth() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
     tree.insert(arg);
-    tree.insert(op);
+    tree.insert(op2);
     EvalTree tree2 = new EvalTree();
     tree2.insert(arg);
     tree2.insert(op);
     tree2.insert(arg);
     tree.insert(tree2);
     Expression expr = new Expression(tree);
-    assertThat(expr.toString(), is("arg + (arg + arg)"));
+    assertThat(expr.toString(), is("arg * (arg + arg)"));
   }
   
   @Test
   public void toStringDepthUOp() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
     UnaryOperator uOp = mock(UnaryOperator.class);
     when(uOp.getSymbol()).thenReturn("-");
     tree.insert(arg);
-    tree.insert(op);
+    tree.insert(op2);
     EvalTree tree2 = new EvalTree();
     tree2.insert(arg);
     tree2.insert(op);
@@ -179,7 +186,7 @@ public class ExpressionTest {
     tree.insert(uOp);
     tree.insert(tree2);
     Expression expr = new Expression(tree);
-    assertThat(expr.toString(), is("arg + -(arg + arg)"));
+    assertThat(expr.toString(), is("arg * -(arg + arg)"));
   }
   
   @Test
@@ -213,6 +220,55 @@ public class ExpressionTest {
     tree.insert(vArg);
     Expression expr = new Expression(tree, variables);
     assertThat(expr.toString(), is("x + x"));
+  }
+  
+  @Test
+  public void toStringOpFlippedPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    EvalTree sub = new EvalTree();
+    sub.insert(arg);
+    sub.insert(op);
+    sub.insert(arg);
+    main.insert(sub);
+    main.insert(op2);
+    main.insert(arg);
+    Expression expr = new Expression(main);
+    assertThat(expr.toString(), is("(arg + arg) * arg"));
+  }
+  
+  @Test
+  public void toStringOpNormalPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    EvalTree sub = new EvalTree();
+    sub.insert(arg);
+    sub.insert(op2);
+    sub.insert(arg);
+    main.insert(sub);
+    main.insert(op);
+    main.insert(arg);
+    Expression expr = new Expression(main);
+    assertThat(expr.toString(), is("arg * arg + arg"));
+  }
+  
+  @Test
+  public void toStringHeapifyPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    main.insert(arg);
+    main.insert(op);
+    main.insert(arg);
+    main.insert(op2);
+    main.insert(arg);
+    Expression expr = new Expression(main);
+    assertThat(expr.toString(), is("arg + arg * arg"));
   }
   
   private static abstract class NotEvaluableArg implements Argument, NotEvaluable { }
