@@ -29,8 +29,11 @@ public class CharArgumentTest {
     charArgParsed = charArgOne.parse("'\\u0123'");
     Assert.assertTrue(charArgParsed instanceof CharArgument
         && (char)charArgParsed.getValue() == '\u0123');
+    charArgParsed = charArgOne.parse("'\\''");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\'');
   }
-  
+
   @Test
   public void testBuild() {
     Argument built = charArgOne.build((char)2);

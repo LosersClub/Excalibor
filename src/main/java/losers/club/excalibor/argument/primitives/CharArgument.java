@@ -17,12 +17,12 @@ public class CharArgument implements NumberArgument {
   public Object getValue() {
     return value;
   }
-  
+
   @Override
   public Argument build(Object obj) {
     return new CharArgument((char)obj);
   }
-  
+
   @Override
   public Argument parse(String expression) {
     if (expression.startsWith("'") && expression.endsWith("'")) {
@@ -36,6 +36,8 @@ public class CharArgument implements NumberArgument {
         } catch (NumberFormatException e) {
           return null;
         }
+      } else if (expression.length() == 4) {
+        return new CharArgument(evaluateEscapeChar(expression.substring(1, 3)));
       }
     }
     return null;
@@ -101,4 +103,25 @@ public class CharArgument implements NumberArgument {
     return new CharArgument((char)(0 - this.value));
   }
 
+  private char evaluateEscapeChar(String s) {
+    switch(s) {
+      case "\\t":
+        return '\t';
+      case "\\n":
+        return '\n';
+      case "\\b":
+        return '\b';
+      case "\\r":
+        return '\r';
+      case "\\f":
+        return '\f';
+      case "\\'":
+        return '\'';
+      case "\\\"":
+        return '\"';
+      case "\\\\":
+        return '\\';
+    }
+    throw new IllegalArgumentException("Unknown escape sequence: \"'" + s + "'\"");
+  }
 }
