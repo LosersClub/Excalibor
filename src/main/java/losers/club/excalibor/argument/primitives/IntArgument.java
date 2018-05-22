@@ -15,7 +15,7 @@ public class IntArgument extends NumberArgument {
   
   @Override
   public int priority() {
-    return 3;
+    return 30;
   }
 
   @Override

@@ -15,7 +15,7 @@ public class CharArgument extends NumberArgument {
   
   @Override
   public int priority() {
-    return 1;
+    return 10;
   }
 
   @Override

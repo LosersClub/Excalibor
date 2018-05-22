@@ -15,7 +15,7 @@ public class FloatArgument extends NumberArgument {
   
   @Override
   public int priority() {
-    return 5;
+    return 50;
   }
 
   @Override

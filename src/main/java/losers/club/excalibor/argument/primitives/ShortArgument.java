@@ -15,7 +15,7 @@ public class ShortArgument extends NumberArgument {
   
   @Override
   public int priority() {
-    return 2;
+    return 20;
   }
 
   @Override

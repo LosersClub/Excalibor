@@ -15,7 +15,7 @@ public class DoubleArgument extends NumberArgument {
   
   @Override
   public int priority() {
-    return 6;
+    return 60;
   }
 
   @Override
