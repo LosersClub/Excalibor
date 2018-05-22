@@ -2,7 +2,7 @@ package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
 
-public class ShortArgument implements NumberArgument {
+public class ShortArgument extends NumberArgument {
   private final short value;
 
   public ShortArgument() {
@@ -12,6 +12,11 @@ public class ShortArgument implements NumberArgument {
   public ShortArgument(short value) {
     this.value = value;
   }
+  
+  @Override
+  public int priority() {
+    return 2;
+  }
 
   @Override
   public Object getValue() {
@@ -20,7 +25,10 @@ public class ShortArgument implements NumberArgument {
   
   @Override
   public Argument build(Object obj) {
-    return new ShortArgument((short)obj);
+    if (obj instanceof Number) {
+      return new ShortArgument(((Number)obj).shortValue());
+    }
+    throw new IllegalArgumentException(obj.getClass().getSimpleName() + " must of type Number");
   }
 
   @Override
@@ -46,29 +54,28 @@ public class ShortArgument implements NumberArgument {
   }
 
   @Override
-  public ShortArgument add(Argument rhs) {
-    return new ShortArgument((short)(this.value + getRhsValue("+", rhs)));
+  double add(double rhs) {
+    return this.value + rhs;
   }
-
-
+  
   @Override
-  public Argument subtract(Argument rhs) {
-    return new ShortArgument((short)(this.value - getRhsValue("-", rhs)));
+  double subtract(double rhs) {
+    return this.value - rhs;
   }
-
+  
   @Override
-  public Argument multiply(Argument rhs) {
-    return new ShortArgument((short)(this.value * getRhsValue("*", rhs)));
+  double multiply(double rhs) {
+    return this.value * rhs;
   }
-
+  
   @Override
-  public Argument divide(Argument rhs) {
-    return new ShortArgument((short)(this.value / getRhsValue("/", rhs)));
+  double divide(double rhs) {
+    return this.value / rhs;
   }
-
+  
   @Override
-  public Argument modulo(Argument rhs) {
-    return new ShortArgument((short)(this.value % getRhsValue("%", rhs)));
+  double modulo(double rhs) {
+    return this.value % rhs;
   }
 
   @Override
@@ -84,15 +91,6 @@ public class ShortArgument implements NumberArgument {
   @Override
   public BooleanArgument equals(Argument rhs) {
     return new BooleanArgument(this.value == getRhsValue("==", rhs));
-  }
-
-  private double getRhsValue(String op, Argument rhs) {
-    if (rhs instanceof NumberArgument) {
-      return ((NumberArgument)(rhs)).getMathTypeValue();
-    }
-    throw new IllegalArgumentException(String.format(
-        "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Short.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
   @Override

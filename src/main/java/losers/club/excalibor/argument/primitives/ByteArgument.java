@@ -2,7 +2,7 @@ package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
 
-public class ByteArgument implements NumberArgument {
+public class ByteArgument extends NumberArgument {
   private final byte value;
 
   public ByteArgument() {
@@ -12,6 +12,11 @@ public class ByteArgument implements NumberArgument {
   public ByteArgument(byte value) {
     this.value = value;
   }
+  
+  @Override
+  public int priority() {
+    return 0;
+  }
 
   @Override
   public Object getValue() {
@@ -20,7 +25,10 @@ public class ByteArgument implements NumberArgument {
   
   @Override
   public Argument build(Object obj) {
-    return new ByteArgument((byte)obj);
+    if (obj instanceof Number) {
+      return new ByteArgument(((Number)obj).byteValue());
+    }
+    throw new IllegalArgumentException(obj.getClass().getSimpleName() + " must of type Number");
   }
 
   @Override
@@ -44,29 +52,28 @@ public class ByteArgument implements NumberArgument {
   }
 
   @Override
-  public ByteArgument add(Argument rhs) {
-    return new ByteArgument((byte)(this.value + getRhsValue("+", rhs)));
+  double add(double rhs) {
+    return this.value + rhs;
   }
-
-
+  
   @Override
-  public Argument subtract(Argument rhs) {
-    return new ByteArgument((byte)(this.value - getRhsValue("-", rhs)));
+  double subtract(double rhs) {
+    return this.value - rhs;
   }
-
+  
   @Override
-  public Argument multiply(Argument rhs) {
-    return new ByteArgument((byte)(this.value * getRhsValue("*", rhs)));
+  double multiply(double rhs) {
+    return this.value * rhs;
   }
-
+  
   @Override
-  public Argument divide(Argument rhs) {
-    return new ByteArgument((byte)(this.value / getRhsValue("/", rhs)));
+  double divide(double rhs) {
+    return this.value / rhs;
   }
-
+  
   @Override
-  public Argument modulo(Argument rhs) {
-    return new ByteArgument((byte)(this.value % getRhsValue("%", rhs)));
+  double modulo(double rhs) {
+    return this.value % rhs;
   }
 
   @Override
@@ -82,15 +89,6 @@ public class ByteArgument implements NumberArgument {
   @Override
   public BooleanArgument equals(Argument rhs) {
     return new BooleanArgument(this.value == getRhsValue("==", rhs));
-  }
-
-  private double getRhsValue(String op, Argument rhs) {
-    if (rhs instanceof NumberArgument) {
-      return ((NumberArgument)(rhs)).getMathTypeValue();
-    }
-    throw new IllegalArgumentException(String.format(
-        "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Byte.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
   @Override

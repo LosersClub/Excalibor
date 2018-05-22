@@ -2,7 +2,7 @@ package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
 
-public class LongArgument implements NumberArgument {
+public class LongArgument extends NumberArgument {
   private final long value;
 
   public LongArgument() {
@@ -12,6 +12,11 @@ public class LongArgument implements NumberArgument {
   public LongArgument(long value) {
     this.value = value;
   }
+  
+  @Override
+  public int priority() {
+    return 4;
+  }
 
   @Override
   public Object getValue() {
@@ -20,7 +25,10 @@ public class LongArgument implements NumberArgument {
   
   @Override
   public Argument build(Object obj) {
-    return new LongArgument((long)obj);
+    if (obj instanceof Number) {
+      return new LongArgument(((Number)obj).longValue());
+    }
+    throw new IllegalArgumentException(obj.getClass().getSimpleName() + " must of type Number");
   }
 
   @Override
@@ -40,31 +48,30 @@ public class LongArgument implements NumberArgument {
     }
     return null;
   }
-
+  
   @Override
-  public LongArgument add(Argument rhs) {
-    return new LongArgument((long)(this.value + getRhsValue("+", rhs)));
+  double add(double rhs) {
+    return this.value + rhs;
   }
-
-
+  
   @Override
-  public Argument subtract(Argument rhs) {
-    return new LongArgument((long)(this.value - getRhsValue("-", rhs)));
+  double subtract(double rhs) {
+    return this.value - rhs;
   }
-
+  
   @Override
-  public Argument multiply(Argument rhs) {
-    return new LongArgument((long)(this.value * getRhsValue("*", rhs)));
+  double multiply(double rhs) {
+    return this.value * rhs;
   }
-
+  
   @Override
-  public Argument divide(Argument rhs) {
-    return new LongArgument((long)(this.value / getRhsValue("/", rhs)));
+  double divide(double rhs) {
+    return this.value / rhs;
   }
-
+  
   @Override
-  public Argument modulo(Argument rhs) {
-    return new LongArgument((long)(this.value % getRhsValue("%", rhs)));
+  double modulo(double rhs) {
+    return this.value % rhs;
   }
 
   @Override
@@ -80,15 +87,6 @@ public class LongArgument implements NumberArgument {
   @Override
   public BooleanArgument equals(Argument rhs) {
     return new BooleanArgument(this.value == getRhsValue("==", rhs));
-  }
-
-  private double getRhsValue(String op, Argument rhs) {
-    if (rhs instanceof NumberArgument) {
-      return ((NumberArgument)(rhs)).getMathTypeValue();
-    }
-    throw new IllegalArgumentException(String.format(
-        "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Long.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
   @Override

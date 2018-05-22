@@ -36,6 +36,11 @@ public class CharArgumentTest {
     Argument built = charArgOne.build((char)2);
     Assert.assertTrue(built instanceof CharArgument && (char)built.getValue() == (char)2);
   }
+  
+  @Test(expected = ClassCastException.class)
+  public void testBuildCast() {
+    charArgOne.build("test");
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {
@@ -47,8 +52,8 @@ public class CharArgumentTest {
   public void testNonCharRHS() {
    IntArgument intArg = new IntArgument(4);
    Argument charArgParsed = charArgTwo.add(intArg);
-   Assert.assertTrue(charArgParsed instanceof CharArgument
-       && (char)charArgParsed.getValue() == (char)5);
+   Assert.assertTrue(charArgParsed instanceof IntArgument
+       && (int)charArgParsed.getValue() == 5);
   }
 
   @Test

@@ -36,6 +36,11 @@ public class IntArgumentTest {
     Argument built = intArgOne.build((int)8);
     Assert.assertTrue(built instanceof IntArgument && (int)built.getValue() == 8);
   }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildCast() {
+    intArgOne.build("test");
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {
@@ -47,8 +52,8 @@ public class IntArgumentTest {
   public void testNonIntRHS() {
    DoubleArgument doubleArg = new DoubleArgument(4.00);
    Argument intArgParsed = intArgTwo.add(doubleArg);
-   Assert.assertTrue(intArgParsed instanceof IntArgument
-       && (int)intArgParsed.getValue() == 9);
+   Assert.assertTrue(intArgParsed instanceof DoubleArgument
+       && (double)intArgParsed.getValue() == 9);
   }
 
   @Test

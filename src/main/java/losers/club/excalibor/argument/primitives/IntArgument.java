@@ -2,7 +2,7 @@ package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
 
-public class IntArgument implements NumberArgument{
+public class IntArgument extends NumberArgument {
   private final int value;
 
   public IntArgument() {
@@ -12,6 +12,11 @@ public class IntArgument implements NumberArgument{
   public IntArgument(int value) {
     this.value = value;
   }
+  
+  @Override
+  public int priority() {
+    return 3;
+  }
 
   @Override
   public Object getValue() {
@@ -20,7 +25,10 @@ public class IntArgument implements NumberArgument{
   
   @Override
   public Argument build(Object obj) {
-    return new IntArgument((int)obj);
+    if (obj instanceof Number) {
+      return new IntArgument(((Number)obj).intValue());
+    }
+    throw new IllegalArgumentException(obj.getClass().getSimpleName() + " must of type Number");
   }
 
   @Override
@@ -40,31 +48,30 @@ public class IntArgument implements NumberArgument{
       return null;
     }
   }
-
+  
   @Override
-  public IntArgument add(Argument rhs) {
-    return new IntArgument((int)(this.value + getRhsValue("+", rhs)));
+  double add(double rhs) {
+    return this.value + rhs;
   }
-
-
+  
   @Override
-  public Argument subtract(Argument rhs) {
-    return new IntArgument((int)(this.value - getRhsValue("-", rhs)));
+  double subtract(double rhs) {
+    return this.value - rhs;
   }
-
+  
   @Override
-  public Argument multiply(Argument rhs) {
-    return new IntArgument((int)(this.value * getRhsValue("*", rhs)));
+  double multiply(double rhs) {
+    return this.value * rhs;
   }
-
+  
   @Override
-  public Argument divide(Argument rhs) {
-    return new IntArgument((int)(this.value / getRhsValue("/", rhs)));
+  double divide(double rhs) {
+    return this.value / rhs;
   }
-
+  
   @Override
-  public Argument modulo(Argument rhs) {
-    return new IntArgument((int)(this.value % getRhsValue("%", rhs)));
+  double modulo(double rhs) {
+    return this.value % rhs;
   }
 
   @Override
@@ -80,15 +87,6 @@ public class IntArgument implements NumberArgument{
   @Override
   public BooleanArgument equals(Argument rhs) {
     return new BooleanArgument(this.value == getRhsValue("==", rhs));
-  }
-
-  private double getRhsValue(String op, Argument rhs) {
-    if (rhs instanceof NumberArgument) {
-      return ((NumberArgument)(rhs)).getMathTypeValue();
-    }
-    throw new IllegalArgumentException(String.format(
-        "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Integer.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
   @Override
