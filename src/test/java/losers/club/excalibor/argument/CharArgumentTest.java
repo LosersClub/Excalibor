@@ -32,6 +32,32 @@ public class CharArgumentTest {
     charArgParsed = charArgOne.parse("'\\''");
     Assert.assertTrue(charArgParsed instanceof CharArgument
         && (char)charArgParsed.getValue() == '\'');
+    charArgParsed = charArgOne.parse("'\\t'");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\t');
+    charArgParsed = charArgOne.parse("'\\n'");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\n');
+    charArgParsed = charArgOne.parse("'\\b'");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\b');
+    charArgParsed = charArgOne.parse("'\\r'");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\r');
+    charArgParsed = charArgOne.parse("'\\f'");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\f');
+    charArgParsed = charArgOne.parse("'\\\"'");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\"');
+    charArgParsed = charArgOne.parse("'\\\\'");
+    Assert.assertTrue(charArgParsed instanceof CharArgument
+        && (char)charArgParsed.getValue() == '\\');
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidEscape() {
+    charArgOne.parse("'\\v'");
   }
 
   @Test
