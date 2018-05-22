@@ -17,7 +17,7 @@ public class StringArgument implements ComparableArgument{
   public Object getValue() {
     return value;
   }
-  
+
   @Override
   public Argument build(Object obj) {
     return new StringArgument((String)obj);
