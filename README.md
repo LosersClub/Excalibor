@@ -1,6 +1,5 @@
 # Excalibor
-[![Build Status](https://img.shields.io/travis/LosersClub/Excalibor.svg?style=flat-square)](https://travis-ci.org/LosersClub/Excalibor) [![Codecov branch](https://img.shields.io/codecov/c/github/LosersClub/Excalibor.svg?style=flat-square)](https://codecov.io/gh/LosersClub/Excalibor) ![Maven Central](https://img.shields.io/maven-central/v/losers.club/excalibor.svg?style=flat-square)
-
+[![Build Status](https://img.shields.io/travis/LosersClub/Excalibor.svg?style=flat-square)](https://travis-ci.org/LosersClub/Excalibor) [![Codecov branch](https://img.shields.io/codecov/c/github/LosersClub/Excalibor.svg?style=flat-square)](https://codecov.io/gh/LosersClub/Excalibor) ![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square) ![Maven Central](https://img.shields.io/maven-central/v/losers.club/excalibor.svg?style=flat-square)
 Excalibor is a dependency free extendable single-line expression parser that supports variables. Based on Java syntax, Excalibor is designed to closely emulate the same functionality as Java, meaning it will return the proper types and throw exceptions as you would expect if the expression was written in Java.
 
 ## Latest release
@@ -77,3 +76,6 @@ vars.put("x", 16);
 expr.evaluate(vars); // returns 20
 ```
 Note: For the primitive types, the type returned when `Expression` is evaluated will be the highest priority type used. From least to greatest that is `byte -> char -> short -> int -> long -> float -> double`. As an example, with the `DefaultCompiler` the expression `2 / 3` will return `0` with type `Integer` whereas `2 / 3.0` will return `0.6666666666666666` with type `Double`.
+
+## License
+This project is licensed under the terms of the MIT license
