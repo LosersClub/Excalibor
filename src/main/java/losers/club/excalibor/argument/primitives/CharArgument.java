@@ -1,6 +1,7 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.NumberArgument;
 
 public class CharArgument extends NumberArgument {
   private final char value;
@@ -52,27 +53,27 @@ public class CharArgument extends NumberArgument {
   }
   
   @Override
-  double add(double rhs) {
+  protected double add(double rhs) {
     return this.value + rhs;
   }
   
   @Override
-  double subtract(double rhs) {
+  protected double subtract(double rhs) {
     return this.value - rhs;
   }
   
   @Override
-  double multiply(double rhs) {
+  protected double multiply(double rhs) {
     return this.value * rhs;
   }
   
   @Override
-  double divide(double rhs) {
+  protected double divide(double rhs) {
     return this.value / rhs;
   }
   
   @Override
-  double modulo(double rhs) {
+  protected double modulo(double rhs) {
     return this.value % rhs;
   }
 

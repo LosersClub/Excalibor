@@ -1,7 +1,7 @@
 package losers.club.excalibor.operator;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.primitives.LogicalArgument;
+import losers.club.excalibor.argument.LogicalArgument;
 
 public abstract class LogicOperator extends Operator {
 

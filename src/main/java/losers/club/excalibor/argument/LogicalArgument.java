@@ -1,6 +1,6 @@
-package losers.club.excalibor.argument.primitives;
+package losers.club.excalibor.argument;
 
-import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.primitives.BooleanArgument;
 
 public interface LogicalArgument extends Argument {
   BooleanArgument equals(Argument rhs);

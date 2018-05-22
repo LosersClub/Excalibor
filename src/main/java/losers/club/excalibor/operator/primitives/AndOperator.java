@@ -1,7 +1,7 @@
 package losers.club.excalibor.operator.primitives;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.primitives.LogicalArgument;
+import losers.club.excalibor.argument.LogicalArgument;
 import losers.club.excalibor.operator.LogicOperator;
 
 public class AndOperator extends LogicOperator{

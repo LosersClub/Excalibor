@@ -1,6 +1,7 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.LogicalArgument;
 
 public class BooleanArgument implements LogicalArgument {
   private final boolean value;

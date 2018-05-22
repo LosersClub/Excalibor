@@ -1,6 +1,4 @@
-package losers.club.excalibor.argument.primitives;
-
-import losers.club.excalibor.argument.Argument;
+package losers.club.excalibor.argument;
 
 public abstract class NumberArgument implements ComparableArgument {
   
@@ -23,14 +21,14 @@ public abstract class NumberArgument implements ComparableArgument {
   
   public abstract int priority();
   public abstract double getMathTypeValue();
-  abstract double add(double rhs);
-  abstract double subtract(double rhs);
-  abstract double multiply(double rhs);
-  abstract double divide(double rhs);
-  abstract double modulo(double rhs);
+  protected abstract double add(double rhs);
+  protected abstract double subtract(double rhs);
+  protected abstract double multiply(double rhs);
+  protected abstract double divide(double rhs);
+  protected abstract double modulo(double rhs);
   
   
-  double getRhsValue(String op, Argument rhs) {
+  protected double getRhsValue(String op, Argument rhs) {
     if (rhs instanceof NumberArgument) {
       return ((NumberArgument)(rhs)).getMathTypeValue();
     }
