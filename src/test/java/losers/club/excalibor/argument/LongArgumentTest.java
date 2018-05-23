@@ -38,6 +38,11 @@ public class LongArgumentTest {
     Argument built = longArgOne.build((long)6L);
     Assert.assertTrue(built instanceof LongArgument && (long)built.getValue() == 6L);
   }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildCast() {
+    longArgOne.build("test");
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {

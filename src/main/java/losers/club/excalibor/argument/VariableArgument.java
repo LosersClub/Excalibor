@@ -2,7 +2,7 @@ package losers.club.excalibor.argument;
 
 import losers.club.excalibor.ExpressionCompiler;
 
-public class VariableArgument implements Argument, NotEvaluable {
+public class VariableArgument extends Argument implements NotEvaluable {
   private final ExpressionCompiler compiler;
   private Object obj = null;
   private boolean evaluable = false;

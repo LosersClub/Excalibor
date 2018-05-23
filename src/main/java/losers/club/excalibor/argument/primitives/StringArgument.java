@@ -1,8 +1,9 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.ComparableArgument;
 
-public class StringArgument implements ComparableArgument{
+public class StringArgument extends ComparableArgument {
   private final String value;
 
   public StringArgument() {
@@ -17,7 +18,7 @@ public class StringArgument implements ComparableArgument{
   public Object getValue() {
     return value;
   }
-  
+
   @Override
   public Argument build(Object obj) {
     return new StringArgument((String)obj);

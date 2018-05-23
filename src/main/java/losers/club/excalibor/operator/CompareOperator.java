@@ -1,7 +1,7 @@
 package losers.club.excalibor.operator;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.primitives.ComparableArgument;
+import losers.club.excalibor.argument.ComparableArgument;
 
 public abstract class CompareOperator extends Operator {
   

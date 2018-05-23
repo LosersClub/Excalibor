@@ -36,6 +36,11 @@ public class DoubleArgumentTest {
     Argument built = doubleArgOne.build((double)2.4);
     Assert.assertTrue(built instanceof DoubleArgument && (double)built.getValue() == 2.4);
   }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildCast() {
+    doubleArgOne.build("test");
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {

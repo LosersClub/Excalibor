@@ -30,6 +30,11 @@ public class ByteArgumentTest {
     Argument built = byteArgOne.build((byte)2);
     Assert.assertTrue(built instanceof ByteArgument && (byte)built.getValue() == (byte)2);
   }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildCast() {
+    byteArgOne.build("test");
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {
@@ -41,8 +46,8 @@ public class ByteArgumentTest {
   public void testNonByteRHS() {
    IntArgument intArg = new IntArgument(4);
    Argument byteArgParsed = byteArgOne.add(intArg);
-   Assert.assertTrue(byteArgParsed instanceof ByteArgument
-       && (byte)byteArgParsed.getValue() == (byte)4);
+   Assert.assertTrue(byteArgParsed instanceof IntArgument
+       && (int)byteArgParsed.getValue() == 4);
   }
 
   @Test
