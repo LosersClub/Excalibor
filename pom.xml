@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>losers.club</groupId>
+  <groupId>com.github.losersclub</groupId>
   <artifactId>excalibor</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -18,7 +18,7 @@
   <developers>
     <developer>
       <name>Anastasia Miles</name>
-      <email></email>
+      <email>anastarm@uci.edu</email>
       <organization>LosersClub</organization>
       <organizationUrl>https://losersclub.github.io/</organizationUrl>
     </developer>

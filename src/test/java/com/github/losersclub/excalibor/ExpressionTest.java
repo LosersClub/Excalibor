@@ -1,0 +1,277 @@
+package com.github.losersclub.excalibor;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.HashMap;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.github.losersclub.excalibor.EvalTree;
+import com.github.losersclub.excalibor.Expression;
+import com.github.losersclub.excalibor.argument.Argument;
+import com.github.losersclub.excalibor.argument.NotEvaluable;
+import com.github.losersclub.excalibor.argument.VariableArgument;
+import com.github.losersclub.excalibor.operator.Operator;
+import com.github.losersclub.excalibor.operator.UnaryOperator;
+
+
+@RunWith(MockitoJUnitRunner.class)
+public class ExpressionTest {
+  @Mock Argument arg;
+  @Mock NotEvaluableArg nArg;
+  @Mock Operator op;
+  EvalTree tree = new EvalTree();
+  HashMap<String, VariableArgument> variables = new HashMap<String, VariableArgument>(); 
+  
+  @Before
+  public void before() {
+    when(arg.getValue()).thenReturn("arg");
+    when(op.getSymbol()).thenReturn("+");
+    when(op.priority()).thenReturn(1);
+  }
+  
+  @Test
+  public void evaluateNoCopy() {
+    tree.insert(arg);
+    Expression expr = new Expression(tree);
+    assertThat(expr.evaluate(), is("arg"));
+  }
+  
+  @Test
+  public void evaluateCast() {
+    tree.insert(arg);
+    Expression expr = new Expression(tree);
+    assertThat(expr.evaluate(String.class), is("arg"));
+  }
+  
+  @Test(expected = ClassCastException.class)
+  public void evaluateBadCast() {
+    tree.insert(arg);
+    Expression expr = new Expression(tree);
+    expr.evaluate(Integer.class);
+  }
+  
+  @Test
+  public void evaluateWithOp() {
+    when(op.evaluate(arg, arg)).thenReturn(arg);
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(arg);
+    assertThat(tree.getRoot().op, is(op));
+    Expression expr = new Expression(tree);
+    assertThat(expr.evaluate(), is("arg"));
+    assertThat(tree.getRoot().op, is(op));
+    verify(op, times(1)).evaluate(arg, arg);
+  }
+  
+  @Test
+  public void evaluateNotEvaluable() {
+    when(nArg.isEvaluable()).thenReturn(true);
+    when(nArg.convert()).thenReturn(arg);
+    tree.insert(nArg);
+    assertThat(tree.getRoot().value, is(nArg));
+    Expression expr = new Expression(tree);
+    assertThat(expr.evaluate(), is("arg"));
+    assertThat(tree.getRoot().value, is(nArg));
+    verify(nArg, times(1)).convert();
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void setVariableDoesntExist() {
+    HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("x", null);
+    Expression expr = new Expression(tree);
+    expr.evaluate(vars);
+  }
+  
+  @Test
+  public void setVariableEvaluate() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    Object obj = new Object();
+    HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("x", obj);
+    variables.put("x", vArg);
+    tree.insert(arg);
+    Expression expr = new Expression(tree, variables);
+    expr.evaluate(vars);
+    verify(vArg, times(1)).setValue(obj);
+  }
+  
+  @Test
+  public void setVariableEvaluateCast() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    Object obj = new Object();
+    HashMap<String, Object> vars = new HashMap<String, Object>();
+    vars.put("x", obj);
+    variables.put("x", vArg);
+    tree.insert(arg);
+    Expression expr = new Expression(tree, variables);
+    expr.evaluate(vars, String.class);
+    verify(vArg, times(1)).setValue(obj);
+  }
+  
+  @Test
+  public void evaluateVariableSame() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    when(vArg.isEvaluable()).thenReturn(true);
+    when(vArg.convert()).thenReturn(arg);
+    when(op.evaluate(arg, arg)).thenReturn(arg);
+    variables.put("x", vArg);
+    tree.insert(vArg);
+    tree.insert(op);
+    tree.insert(vArg);
+    
+    Expression expr = new Expression(tree, variables);
+    Object obj = new Object();
+    expr.setVariable("x", obj);
+    assertThat(expr.evaluate(), is("arg"));
+    verify(vArg, times(1)).setValue(obj);
+    verify(vArg, times(2)).convert();
+  }
+  
+  @Test
+  public void toStringTest() {
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(arg);
+    Expression expr = new Expression(tree);
+    assertThat(expr.toString(), is("arg + arg"));
+  }
+  
+  @Test
+  public void toStringUOp() {
+    UnaryOperator uOp = mock(UnaryOperator.class);
+    when(uOp.getSymbol()).thenReturn("-");
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(uOp);
+    tree.insert(arg);
+    Expression expr = new Expression(tree);
+    assertThat(expr.toString(), is("arg + -arg"));
+  }
+  
+  @Test
+  public void toStringDepth() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    tree.insert(arg);
+    tree.insert(op2);
+    EvalTree tree2 = new EvalTree();
+    tree2.insert(arg);
+    tree2.insert(op);
+    tree2.insert(arg);
+    tree.insert(tree2);
+    Expression expr = new Expression(tree);
+    assertThat(expr.toString(), is("arg * (arg + arg)"));
+  }
+  
+  @Test
+  public void toStringDepthUOp() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    UnaryOperator uOp = mock(UnaryOperator.class);
+    when(uOp.getSymbol()).thenReturn("-");
+    tree.insert(arg);
+    tree.insert(op2);
+    EvalTree tree2 = new EvalTree();
+    tree2.insert(arg);
+    tree2.insert(op);
+    tree2.insert(arg);
+    tree.insert(uOp);
+    tree.insert(tree2);
+    Expression expr = new Expression(tree);
+    assertThat(expr.toString(), is("arg * -(arg + arg)"));
+  }
+  
+  @Test
+  public void toStringVariableNotInMap() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    variables.put("y", mock(VariableArgument.class));
+    tree.insert(vArg);
+    tree.insert(op);
+    tree.insert(arg);
+    Expression expr = new Expression(tree, variables);
+    assertThat(expr.toString(), is("null + arg"));
+  }
+  
+  @Test
+  public void toStringVariable() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    variables.put("x", vArg);
+    tree.insert(vArg);
+    tree.insert(op);
+    tree.insert(arg);
+    Expression expr = new Expression(tree, variables);
+    assertThat(expr.toString(), is("x + arg"));
+  }
+  
+  @Test
+  public void toStringVariableSame() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    variables.put("x", vArg);
+    tree.insert(vArg);
+    tree.insert(op);
+    tree.insert(vArg);
+    Expression expr = new Expression(tree, variables);
+    assertThat(expr.toString(), is("x + x"));
+  }
+  
+  @Test
+  public void toStringOpFlippedPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    EvalTree sub = new EvalTree();
+    sub.insert(arg);
+    sub.insert(op);
+    sub.insert(arg);
+    main.insert(sub);
+    main.insert(op2);
+    main.insert(arg);
+    Expression expr = new Expression(main);
+    assertThat(expr.toString(), is("(arg + arg) * arg"));
+  }
+  
+  @Test
+  public void toStringOpNormalPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    EvalTree sub = new EvalTree();
+    sub.insert(arg);
+    sub.insert(op2);
+    sub.insert(arg);
+    main.insert(sub);
+    main.insert(op);
+    main.insert(arg);
+    Expression expr = new Expression(main);
+    assertThat(expr.toString(), is("arg * arg + arg"));
+  }
+  
+  @Test
+  public void toStringHeapifyPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    main.insert(arg);
+    main.insert(op);
+    main.insert(arg);
+    main.insert(op2);
+    main.insert(arg);
+    Expression expr = new Expression(main);
+    assertThat(expr.toString(), is("arg + arg * arg"));
+  }
+  
+  private static abstract class NotEvaluableArg extends Argument implements NotEvaluable { }
+}
