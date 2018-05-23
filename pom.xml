@@ -4,14 +4,45 @@
 
   <groupId>losers.club</groupId>
   <artifactId>excalibor</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <name>Excalibor</name>
-
+  <description>Single-line math and logic expression evaluator for Java</description>
+  <url>https://github.com/LosersClub/Excalibor</url>
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
+  
+  <developers>
+    <developer>
+      <name>Anastasia Miles</name>
+      <email></email>
+      <organization>LosersClub</organization>
+      <organizationUrl>https://losersclub.github.io/</organizationUrl>
+    </developer>
+    <developer>
+      <name>Kyle Bartz</name>
+      <email>kyle@unleashurgeek.com</email>
+      <organization>LosersClub</organization>
+      <organizationUrl>https://losersclub.github.io/</organizationUrl>
+    </developer>
+  </developers>
+  
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+  
+  <scm>
+    <connection>scm:git:git://github.com/LosersClub/Excalibor.git</connection>
+    <developerConnection>scm:git:ssh://github.com:LosersClub/Excalibor.git</developerConnection>
+    <url>https://github.com/LosersClub/Excalibor</url>
+  </scm>
+  
   <build>
     <plugins>
       <plugin>
@@ -21,23 +52,6 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.7</version>
-        <configuration>
-          <reportPlugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>3.0.0</version>
-              <configuration>
-                <linksource>true</linksource>
-              </configuration>
-            </plugin>
-          </reportPlugins>
         </configuration>
       </plugin>
       <plugin>
@@ -63,7 +77,6 @@
   </build>
 
   <dependencies>
-    <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -79,7 +92,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>2.15.0</version>
+      <version>2.18.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
