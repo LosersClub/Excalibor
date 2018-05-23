@@ -1,6 +1,6 @@
 package losers.club.excalibor.argument;
 
-public abstract class NumberArgument implements ComparableArgument {
+public abstract class NumberArgument extends ComparableArgument {
   
   public Argument add(Argument rhs) {
     return cast(rhs, this.add(getRhsValue("add", rhs)));

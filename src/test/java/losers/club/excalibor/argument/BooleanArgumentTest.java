@@ -24,6 +24,19 @@ public class BooleanArgumentTest {
   }
   
   @Test
+  public void testToString() {
+    Assert.assertTrue(boolArgTrue.toString().equals("true"));
+  }
+  
+  @SuppressWarnings("unlikely-arg-type")
+  @Test
+  public void testInternalEquals() {
+    Assert.assertTrue(boolArgTrue.equals(true));
+    Assert.assertTrue(boolArgTrue.equals((Object)boolArgTrue));
+    Assert.assertFalse(boolArgTrue.equals((Object)boolArgFalse));
+  }
+  
+  @Test
   public void testConvert() {
     VariableArgument vArg = Mockito.mock(VariableArgument.class);
     Mockito.when(vArg.getValue()).thenReturn(true);

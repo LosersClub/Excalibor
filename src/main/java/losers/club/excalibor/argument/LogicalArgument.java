@@ -2,18 +2,12 @@ package losers.club.excalibor.argument;
 
 import losers.club.excalibor.argument.primitives.BooleanArgument;
 
-public interface LogicalArgument extends Argument {
-  BooleanArgument equals(Argument rhs);
+public abstract class  LogicalArgument extends EqualsArgument {
+  public abstract BooleanArgument and(Argument rhs);
 
-  BooleanArgument and(Argument rhs);
+  public abstract BooleanArgument or(Argument rhs);
 
-  BooleanArgument or(Argument rhs);
+  public abstract BooleanArgument xor(Argument rhs);
 
-  BooleanArgument xor(Argument rhs);
-
-  BooleanArgument not();
-
-  default BooleanArgument notEquals(Argument rhs) {
-    return equals(rhs).not();
-  }
+  public abstract BooleanArgument not();
 }

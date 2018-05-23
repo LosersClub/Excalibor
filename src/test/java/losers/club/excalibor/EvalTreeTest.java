@@ -597,5 +597,5 @@ public class EvalTreeTest {
     };
   }
   
-  private static abstract class NotEvaluableArg implements Argument, NotEvaluable { }
+  private static abstract class NotEvaluableArg extends Argument implements NotEvaluable { }
 }

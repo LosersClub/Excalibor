@@ -271,5 +271,5 @@ public class ExpressionTest {
     assertThat(expr.toString(), is("arg + arg * arg"));
   }
   
-  private static abstract class NotEvaluableArg implements Argument, NotEvaluable { }
+  private static abstract class NotEvaluableArg extends Argument implements NotEvaluable { }
 }
