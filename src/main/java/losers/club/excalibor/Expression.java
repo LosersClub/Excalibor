@@ -70,7 +70,13 @@ public final class Expression {
     if (node == null) {
       return;
     }
+    if (node.isOp() && node.left.isOp() && node.left.op.priority() < node.op.priority()) {
+      sb.append("(");
+    }
     toString(sb, node.left);
+    if (node.isOp() && node.left.isOp() && node.left.op.priority() < node.op.priority()) {
+      sb.append(")");
+    }
     
     if (node.isArg()) {
       if (node.hasUnaryOp()) {
@@ -91,14 +97,16 @@ public final class Expression {
       sb.append(" " + node.op.getSymbol() + " ");
     }
     
-    if (node.right != null && node.right.isOp()) {
+    if (node.isOp() && node.right.isOp()) {
       if (node.right.hasUnaryOp()) {
         sb.append(node.right.uOp.getSymbol());
       }
-      sb.append("(");
+      if (node.right.op.priority() < node.op.priority()) {
+        sb.append("(");
+      }
     }
     toString(sb, node.right);
-    if (node.right != null && node.right.isOp()) {
+    if (node.isOp() && node.right.isOp() && node.right.op.priority() < node.op.priority()) {
       sb.append(")");
     }
   }

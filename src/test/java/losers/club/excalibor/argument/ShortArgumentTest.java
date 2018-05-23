@@ -36,6 +36,11 @@ public class ShortArgumentTest {
     Argument built = shortArgOne.build((short)2);
     Assert.assertTrue(built instanceof ShortArgument && (short)built.getValue() == 2);
   }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildCast() {
+    shortArgOne.build("test");
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {
@@ -47,8 +52,8 @@ public class ShortArgumentTest {
   public void testNonShortRHS() {
    DoubleArgument doubleArg = new DoubleArgument(4.00);
    Argument shortArgParsed = shortArgTwo.add(doubleArg);
-   Assert.assertTrue(shortArgParsed instanceof ShortArgument
-       && (short)shortArgParsed.getValue() == (short)9);
+   Assert.assertTrue(shortArgParsed instanceof DoubleArgument
+       && (double)shortArgParsed.getValue() == 9);
   }
 
   @Test

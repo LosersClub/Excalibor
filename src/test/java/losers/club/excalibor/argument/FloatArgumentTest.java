@@ -37,6 +37,11 @@ public class FloatArgumentTest {
     Argument built = floatArgOne.build((float)2.4);
     Assert.assertTrue(built instanceof FloatArgument && (float)built.getValue() == 2.4f);
   }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testBuildCast() {
+    floatArgOne.build("test");
+  }
 
   @Test (expected = IllegalArgumentException.class)
   public void testInvalidRHS() {

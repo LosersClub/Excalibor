@@ -1,8 +1,9 @@
 package losers.club.excalibor.argument.primitives;
 
 import losers.club.excalibor.argument.Argument;
+import losers.club.excalibor.argument.NumberArgument;
 
-public class DoubleArgument implements NumberArgument{
+public class DoubleArgument extends NumberArgument {
   private final double value;
 
   public DoubleArgument() {
@@ -12,6 +13,11 @@ public class DoubleArgument implements NumberArgument{
   public DoubleArgument(double value) {
     this.value = value;
   }
+  
+  @Override
+  public int priority() {
+    return 60;
+  }
 
   @Override
   public Object getValue() {
@@ -20,7 +26,10 @@ public class DoubleArgument implements NumberArgument{
   
   @Override
   public Argument build(Object obj) {
-    return new DoubleArgument((double)obj);
+    if (obj instanceof Number) {
+      return new DoubleArgument(((Number)obj).doubleValue());
+    }
+    throw new IllegalArgumentException(obj.getClass().getSimpleName() + " must of type Number");
   }
 
   @Override
@@ -41,29 +50,28 @@ public class DoubleArgument implements NumberArgument{
   }
 
   @Override
-  public DoubleArgument add(Argument rhs) {
-    return new DoubleArgument(this.value + getRhsValue("+", rhs));
+  protected double add(double rhs) {
+    return this.value + rhs;
   }
-
-
+  
   @Override
-  public Argument subtract(Argument rhs) {
-    return new DoubleArgument(this.value - getRhsValue("-", rhs));
+  protected double subtract(double rhs) {
+    return this.value - rhs;
   }
-
+  
   @Override
-  public Argument multiply(Argument rhs) {
-    return new DoubleArgument(this.value * getRhsValue("*", rhs));
+  protected double multiply(double rhs) {
+    return this.value * rhs;
   }
-
+  
   @Override
-  public Argument divide(Argument rhs) {
-    return new DoubleArgument(this.value / getRhsValue("/", rhs));
+  protected double divide(double rhs) {
+    return this.value / rhs;
   }
-
+  
   @Override
-  public Argument modulo(Argument rhs) {
-    return new DoubleArgument(this.value % getRhsValue("%", rhs));
+  protected double modulo(double rhs) {
+    return this.value % rhs;
   }
 
   @Override
@@ -79,15 +87,6 @@ public class DoubleArgument implements NumberArgument{
   @Override
   public BooleanArgument equals(Argument rhs) {
     return new BooleanArgument(this.value == getRhsValue("==", rhs));
-  }
-
-  private double getRhsValue(String op, Argument rhs) {
-    if (rhs instanceof NumberArgument) {
-      return ((NumberArgument)(rhs)).getMathTypeValue();
-    }
-    throw new IllegalArgumentException(String.format(
-        "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
-        Double.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
 
   @Override
