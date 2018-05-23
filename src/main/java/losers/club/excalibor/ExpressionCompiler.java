@@ -2,229 +2,340 @@ package losers.club.excalibor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import losers.club.excalibor.argument.Argument;
-import losers.club.excalibor.argument.primitives.BooleanArgument;
-import losers.club.excalibor.argument.primitives.ByteArgument;
-import losers.club.excalibor.argument.primitives.CharArgument;
-import losers.club.excalibor.argument.primitives.DoubleArgument;
-import losers.club.excalibor.argument.primitives.FloatArgument;
-import losers.club.excalibor.argument.primitives.IntArgument;
-import losers.club.excalibor.argument.primitives.LongArgument;
-import losers.club.excalibor.argument.primitives.ShortArgument;
-import losers.club.excalibor.argument.primitives.StringArgument;
+import losers.club.excalibor.argument.VariableArgument;
+import losers.club.excalibor.argument.primitives.*;
 import losers.club.excalibor.operator.Operator;
 import losers.club.excalibor.operator.UnaryOperator;
+import losers.club.excalibor.operator.primitives.*;
 
 public class ExpressionCompiler {
-  public final List<Argument> parsers;
-  private final Map<String, Operator> operators; // Change to String tree for better performance?
-  
-  // Property to try and minimize tree/prerun during compile.
-  private boolean canPrecompute = true;
-  
+  private final List<Argument> arguments;
+  private final Map<String, Operator> operators;
+
   public ExpressionCompiler() {
-    // TODO: default/fallback parsers & operators?
-    this.parsers = new ArrayList<Argument>();
+    this(false);
+  }
+
+  public ExpressionCompiler(boolean noDefaults) {
+    this.arguments = new ArrayList<Argument>();
     this.operators = new HashMap<String, Operator>();
-    
-    this.parsers.addAll(Arrays.asList(
-        new BooleanArgument(), new ByteArgument(), new CharArgument(),
-        new DoubleArgument(), new FloatArgument(), new IntArgument(),
-        new LongArgument(), new ShortArgument(), new StringArgument()));
+    if (!noDefaults) {
+      addPrimitives();
+    }
   }
-  
-  public Collection<Argument> getParsers() {
-    return Collections.unmodifiableList(this.parsers);
+
+  public ExpressionCompiler(boolean noDefaults, List<Argument> args, List<Operator> ops) {
+    this(noDefaults);
+    for (Argument a : args) {
+      this.addArgument(a);
+    }
+    for (Operator o : ops) {
+      this.addOperator(o);
+    }
   }
-  
-  public void precompute(boolean value) {
-    this.canPrecompute = value;
+
+  private void addPrimitives() {
+    this.arguments.addAll(Arrays.asList(
+        new BooleanArgument(), new ByteArgument(), new CharArgument(), new DoubleArgument(),
+        new FloatArgument(), new IntArgument(), new LongArgument(), new ShortArgument(),
+        new StringArgument()));
+    this.operators.put("+", new AddOperator());
+    this.operators.put("&&", new AndOperator());
+    this.operators.put("/", new DivideOperator());
+    this.operators.put("==", new EqualsOperator());
+    this.operators.put(">=", new GreaterThanEqOperator());
+    this.operators.put(">", new GreaterThanOperator());
+    this.operators.put("<=", new LessThanEqOperator());
+    this.operators.put("<", new LessThanOperator());
+    this.operators.put("%", new ModuloOperator());
+    this.operators.put("*", new MultiplyOperator());
+    this.operators.put("-", new NegateOperator());
+    this.operators.put("!=", new NotEqualsOperator());
+    this.operators.put("!", new NotOperator());
+    this.operators.put("||", new OrOperator());
+    this.operators.put("^", new XOrOperator());
   }
-  
+
+  public List<Argument> getArguments() {
+    return this.arguments;
+  }
+
+  public Map<String, Operator> getOperators() {
+    return this.operators;
+  }
+
+  Operator getOperator(String key) {
+    return this.operators.get(key);
+  }
+
   public void addArgument(Argument arg) {
-    this.parsers.add(arg);
-  }
-  
-  public boolean removeArugment(Argument arg) {
-    return this.parsers.remove(arg);
-  }
-  
-  public void addOperator(Operator op) {
-    this.operators.put(op.getSymbol(), op);
-  }
-  
-  public boolean removeOperator(Operator op) {
-    return this.operators.remove(op.getSymbol(), op);
-  }
-  
-  private Argument getArgument(String expression) {
-    Argument out = null;
-    for (Argument arg : parsers) {
-      Argument temp = null;
-      if ((temp = arg.parse(expression)) != null) {
-        if (out != null) {
-          throw new RuntimeException("Ambiguous parse expression between " + out + " and " + temp);
-        }
-        out = temp;
+    // Reject duplicate arguments
+    for (Argument a : this.arguments) {
+      if (a.getClass() == arg.getClass()) {
+        throw new IllegalArgumentException("Duplicate Arguments found.");
       }
     }
-    return out;
+    this.arguments.add(arg);
   }
-  
-  private boolean handleInQuotes(StringBuilder buffer, char c) {
-    if (!inQuotes) {
-      return false;
-    }
-    buffer.append(c);
-    if (c == buffer.charAt(0) && buffer.charAt(buffer.length() - 1) != '\\') {
-      inQuotes = false;
-      needOperator = true;
-      // TODO: parse for argument and add to tree
-      buffer.setLength(0);
-    }
-    return true;
+
+  public boolean removeArgument(Argument arg) {
+    return this.arguments.remove(arg);
   }
-  
-  private boolean inQuotes = false;
-  private boolean needOperator = false;
-  int stackDepth = 0;
-  
-  public Expression compile(String expression) {
+
+  public void addOperator(Operator op) {
+    for (Operator o : this.operators.values()) {
+      if (o.getClass() == op.getClass()) {
+        throw new IllegalArgumentException("Duplicate Operators found.");
+      }
+      if (o.getSymbol().equals(op.getSymbol())) {
+        throw new AmbiguousOperatorException("Duplicate operator symbols used: " + o.getSymbol()
+            + ". Classes in conflict: " + o.getClass().getSimpleName() + ", "
+            + op.getClass().getSimpleName());
+      }
+    }
+    this.operators.put(op.getSymbol(), op);
+  }
+
+  public void removeOperator(Operator op) {
+    this.operators.remove(op.getSymbol());
+  }
+
+  public void removeOperator(String opSymbol) {
+    this.operators.remove(opSymbol);
+  }
+
+  private int reachEndOfContainer(String expression, int startIndex,
+      char endChar, StringBuilder buffer) {
+    int index = startIndex + 1;
+    int containerCounter = 1;
+    char previousChar = endChar;
+    while (index != expression.length()) {
+      if (expression.charAt(index) == endChar && previousChar != '\\') {
+        containerCounter--;
+        if (containerCounter == 0) {
+          return index;
+        }
+      }
+      else if (expression.charAt(index) == expression.charAt(startIndex) && previousChar != '\\') {
+        containerCounter++;
+      }
+      previousChar = expression.charAt(index);
+      buffer.append(previousChar);
+      index++;
+    }
+    throw new IllegalArgumentException("Unclosed container. Expected an " + endChar);
+  }
+
+  private List<Character> acceptableSymbols =
+      Arrays.asList('\'', '"', '[', ']', '(', ')', '.', '_');
+
+  EvalTree buildTree(String expression, Map<String, VariableArgument> variables)
+      throws IllegalArgumentException, AmbiguousArgumentException {
+
+    boolean mathContainerEncountered = false;
     if (expression == null || (expression = expression.trim()).length() == 0) {
       throw new IllegalArgumentException("Expression cannot be null or an empty string.");
     }
-    
+
     EvalTree tree = new EvalTree();
-    
-    // Attempt at iterative-based parsing
-    
+
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < expression.length(); i++) {
       char c = expression.charAt(i);
-      
+      // Skip any extra white spaces
       if (Character.isWhitespace(c) && buffer.length() == 0) {
         continue;
       }
-      
-      if (handleInQuotes(buffer, c)) {
+      // Handle containers
+      if (c == '"') {
+        buffer.append("\"");
+        i = reachEndOfContainer(expression, i, '\"', buffer);
+        buffer.append("\"");
+      } else if (c == '\'') {
+        buffer.append("\'");
+        i = reachEndOfContainer(expression, i, '\'', buffer);
+        buffer.append("\'");
+      } else if (c == '(') {
+        mathContainerEncountered = buffer.length() == 0;
+        if (!mathContainerEncountered) {
+          buffer.append('(');
+        }
+        i = reachEndOfContainer(expression, i, ')', buffer);
+        if (!mathContainerEncountered) {
+          buffer.append(')');
+        }
+      } else if (c == '[') {
+        mathContainerEncountered = buffer.length() == 0;
+        if (!mathContainerEncountered) {
+          buffer.append('[');
+        }
+        i = reachEndOfContainer(expression, i, ']', buffer);
+        if (!mathContainerEncountered) {
+          buffer.append(']');
+        }
+      } else if (this.isSymbol(c)) {
+        if (buffer.length() > 0) {
+          Argument arg = evaluateString(buffer.toString(), variables);
+          tree.insert(arg);
+          buffer.setLength(0);
+        }
+        while (isSymbol(expression.charAt(i))) {
+          buffer.append(expression.charAt(i));
+          i++;
+        }
+        i--;
+        ParsedOperator op = parseOperator(buffer.toString(), 0);
+        if (op == null) {
+          throw new IllegalArgumentException("Unrecognized operator: " + buffer.toString());
+        }
+        tree.insert(op.op);
+        if (op.isUnaryOpValid()) {
+          tree.insert(op.unaryOp);
+        }
+        buffer.setLength(0);
         continue;
+
+      } else if (Character.isWhitespace(c)) {
+        // ignore it :) #efficient
+      } else {
+        buffer.append(c);
+        if (i != expression.length() - 1) {
+          continue;
+        }
       }
-      
-      // Starting checks.
-      if (buffer.length() == 0) {
-        if (!needOperator) {
-          if (c == '\'' || c == '"') {
-            inQuotes = true;
-            buffer.append(c);
-            continue;
-          }
-          // TODO: Handle eval depth call
-          if (c == '(') {
-            stackDepth++;
-            // TODO: inform tree
-            continue;
-          }
-          
-          if (isSymbol(c)) {
-            int j = i;
-            while (isSymbol(expression.charAt(j))) {
-              buffer.append(expression.charAt(j));
-              j++;
-            }
-            Operator op = operators.get(buffer.toString());
-            if (op instanceof UnaryOperator) {
-              // TODO: Add operator to tree?
-              i = j - 1;
-              buffer.setLength(0);
-              continue;
-            }
-            throw new RuntimeException();
-          }
-        } else {
-          if (c == ')') {
-            stackDepth--;
-            // TODO: inform tree.
-            continue;
-          }
-          int j = i;
-          while (isSymbol(expression.charAt(j))) {
-            buffer.append(expression.charAt(j));
-            j++;
-          }
-          ParsedOperator op = parseOperator(buffer.toString(), 0);
-          // TODO: Add op and optional unary op to tree.
-        } 
-      } 
+      if (mathContainerEncountered) {
+        EvalTree internalTree = buildTree(buffer.toString(), variables);
+        tree.insert(internalTree);
+        mathContainerEncountered = false;
+      } else {
+        Argument arg = evaluateString(buffer.toString(), variables);
+        tree.insert(arg);
+      }
+      buffer.setLength(0);
     }
-    
-    if (stackDepth != 0 || inQuotes == true || needOperator == false) {
-      throw new RuntimeException("Invalid Expression");
-    }
-    
-//    Expression expr = new Expression(tree, null);
-    if (this.canPrecompute) {
-//      expr.precompute();
-    }
-    return null;
+    return tree;
+
   }
-  
-  private static boolean isSymbol(char c) {
-    return !Character.isWhitespace(c) && !Character.isDigit(c) && !Character.isLetter(c);
+
+  boolean isValidVarName(String str) {
+    boolean underscoreEncountered = false;
+    boolean numberEncountered = false;
+    boolean letterEncountered = false;
+    if (str.charAt(0) == '.' || str.charAt(str.length() - 1) == '.'
+        || Character.isDigit(str.charAt(0))) {
+      return false;
+    }
+    for (int i = 0; i < str.length(); i++) {
+      char c = str.charAt(i);
+      if (c == '.' || (!Character.isDigit(c) && !Character.isLetter(c) && c != '_')) {
+        return false;
+      }
+      letterEncountered = letterEncountered || Character.isLetter(c);
+      numberEncountered = numberEncountered || Character.isDigit(c);
+      underscoreEncountered = underscoreEncountered || str.charAt(i) == '_';
+    }
+    if (underscoreEncountered && !(numberEncountered || letterEncountered)) {
+      return false;
+    }
+    return true;
   }
-  
+
+  Argument evaluateString(String stringArg, Map<String, VariableArgument> variables)
+      throws AmbiguousArgumentException, IllegalArgumentException {
+    Argument viableArg = null;
+    Argument parsedArg = null;
+    for (Argument a : this.arguments) {
+      if ((parsedArg = a.parse(stringArg)) != null) {
+        if (viableArg != null) {
+          throw new AmbiguousArgumentException(
+              "More than one possible type for the argument: " + stringArg);
+        }
+        viableArg = parsedArg;
+      }
+    }
+    if (viableArg == null) {
+      if (isValidVarName(stringArg)) {
+        if (!variables.containsKey(stringArg)) {
+          variables.put(stringArg, new VariableArgument(this));
+        }
+        return variables.get(stringArg);
+      }
+      else {
+        throw new IllegalArgumentException("Unrecognized argument: " + stringArg);
+      }
+    }
+    return viableArg;
+  }
+
+  public Expression compile(String expression)
+      throws IllegalArgumentException, AmbiguousArgumentException {
+    Map<String, VariableArgument> variables = new HashMap<String, VariableArgument>();
+    EvalTree tree = buildTree(expression, variables);
+    tree.precompute();
+    Expression expr = new Expression(tree, variables);
+    return expr;
+  }
+
+  private boolean isSymbol(char c) {
+    return !Character.isWhitespace(c) && !Character.isDigit(c) && !Character.isLetter(c)
+        && !(this.acceptableSymbols.contains(c));
+  }
+
   protected ParsedOperator parseOperator(final String expression, int startIndex) {
     List<ParsedOperator> potentialOperators = new ArrayList<ParsedOperator>(4);
     StringBuilder buffer = new StringBuilder();
     for (int i = startIndex; i < expression.length(); i++) {
       char c = expression.charAt(i);
-      if (Character.isWhitespace(c) || Character.isDigit(c) || Character.isLetter(c)) {
-        for (int j = potentialOperators.size() - 1; j != 0; j--) {
-          ParsedOperator pop = null;
-          if ((pop = potentialOperators.get(j)) != null) {
-            if (pop.endIndex == i - 1 || pop.unaryOp != null) {
-              return potentialOperators.get(j);
-            }
-          }
-        }
-        return null;
-      }
       buffer.append(c);
-      potentialOperators.add(new ParsedOperator(operators.get(buffer.toString()), i));
+      potentialOperators.add(new ParsedOperator(this.operators.get(buffer.toString())));
       for (int k = 0; k < buffer.length() - 1; k++) {
-        if (potentialOperators.get(k).isValid()) {
-          Operator unary = operators.get(buffer.toString().substring(k));
-          if (unary != null && unary instanceof UnaryOperator) {
+        if (potentialOperators.get(k).isOpValid()) {
+          Operator unary = operators.get(buffer.toString().substring(k+1));
+          if (unary instanceof UnaryOperator) {
+            potentialOperators.get(k).isValid = true;
             potentialOperators.get(k).unaryOp = (UnaryOperator) unary;
+          } else {
+            potentialOperators.get(k).isValid = false;
+            potentialOperators.get(k).unaryOp = null;
           }
         }
+      }
+    }
+
+    for (int j = potentialOperators.size() - 1; j >= 0; j--) {
+      ParsedOperator pop = potentialOperators.get(j);
+      if (pop.isValid && pop.isOpValid()) {
+        return potentialOperators.get(j);
       }
     }
     return null;
   }
-  
+
   private static class ParsedOperator {
     Operator op;
     UnaryOperator unaryOp;
-    int endIndex;
-    
-    ParsedOperator(Operator op, int endIndex) {
-      this(op, null, endIndex);
+    boolean isValid = true;
+
+    ParsedOperator(Operator op) {
+      this(op, null);
     }
-    
-    ParsedOperator(Operator op, UnaryOperator uop, int endIndex) {
+
+    ParsedOperator(Operator op, UnaryOperator uop) {
       this.op = op;
       this.unaryOp = uop;
-      this.endIndex = endIndex;
     }
-    
-    boolean isValid() {
+
+    boolean isOpValid() {
       return op != null;
+    }
+
+    boolean isUnaryOpValid() {
+      return unaryOp != null;
     }
   }
 }
