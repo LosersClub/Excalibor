@@ -10,7 +10,7 @@ To use Excalibor, simply add the dependency to your project's build file (**Java
 For Maven in the `pom.xml`:
 ```xml
 <dependency>
-  <groupId>losers.club</groupId>
+  <groupId>com.github.losersclub</groupId>
   <artifactId>excalibor</artifactId>
   <version>1.0.0</version>
 </dependency>
@@ -18,7 +18,7 @@ For Maven in the `pom.xml`:
 or Gradle in `build.gradle`:
 ```gradle
 dependencies {
-  compile 'losers.club:excalibor:1.0.0'
+  compile 'com.github.losersclub:excalibor:1.0.0'
 }
 ```
 
