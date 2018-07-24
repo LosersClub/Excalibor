@@ -1,5 +1,6 @@
 package com.github.losersclub.excalibor;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,6 +58,14 @@ public final class Expression {
           + "expression", name));
     }
     variables.get(name).setValue(value);
+  }
+  
+  public Collection<String> variables() {
+    return variables.keySet();
+  }
+  
+  public boolean computed() {
+    return this.tree.getRoot().isArg() && !(this.tree.getRoot().value instanceof NotEvaluable);
   }
   
   @Override

@@ -48,6 +48,7 @@ public class ExpressionTest {
   public void evaluateCast() {
     tree.insert(arg);
     Expression expr = new Expression(tree);
+    assertThat(expr.computed(), is(true));
     assertThat(expr.evaluate(String.class), is("arg"));
   }
   
@@ -66,6 +67,7 @@ public class ExpressionTest {
     tree.insert(arg);
     assertThat(tree.getRoot().op, is(op));
     Expression expr = new Expression(tree);
+    assertThat(expr.computed(), is(false));
     assertThat(expr.evaluate(), is("arg"));
     assertThat(tree.getRoot().op, is(op));
     verify(op, times(1)).evaluate(arg, arg);
@@ -78,6 +80,7 @@ public class ExpressionTest {
     tree.insert(nArg);
     assertThat(tree.getRoot().value, is(nArg));
     Expression expr = new Expression(tree);
+    assertThat(expr.computed(), is(false));
     assertThat(expr.evaluate(), is("arg"));
     assertThat(tree.getRoot().value, is(nArg));
     verify(nArg, times(1)).convert();
@@ -100,6 +103,7 @@ public class ExpressionTest {
     variables.put("x", vArg);
     tree.insert(arg);
     Expression expr = new Expression(tree, variables);
+    assertThat(expr.variables(), hasItem("x"));
     expr.evaluate(vars);
     verify(vArg, times(1)).setValue(obj);
   }
@@ -154,6 +158,7 @@ public class ExpressionTest {
     tree.insert(uOp);
     tree.insert(arg);
     Expression expr = new Expression(tree);
+    assertThat(expr.computed(), is(false));
     assertThat(expr.toString(), is("\"arg\" + -\"arg\""));
   }
   

@@ -77,6 +77,11 @@ public class CharArgumentTest {
     StringArgument stringArg = new StringArgument();
     charArgOne.add(stringArg);
   }
+  
+  @Test
+  public void toStringTest() {
+    Assert.assertTrue(charArgOne.parse("'c'").toString().equals("'c'"));
+  }
 
   @Test
   public void testNonCharRHS() {

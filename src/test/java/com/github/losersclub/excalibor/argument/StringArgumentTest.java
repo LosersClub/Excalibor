@@ -46,6 +46,11 @@ public class StringArgumentTest {
   public void testBadEscape() {
     stringArgOne.parse("\"\\a\"");
   }
+  
+  @Test
+  public void toStringTest() {
+    Assert.assertTrue(stringArgTwo.toString().equals("\"Hello\""));
+  }
 
   @Test
   public void testLessThan() {
