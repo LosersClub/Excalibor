@@ -38,6 +38,11 @@ public class StringArgument extends ComparableArgument {
     }
     return null;
   }
+  
+  @Override
+  public String toString() {
+    return '"' + this.value + '"';
+  }
 
   @Override
   public BooleanArgument lessThan(Argument rhs) {

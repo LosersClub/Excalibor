@@ -32,6 +32,7 @@ public class ExpressionTest {
   @Before
   public void before() {
     when(arg.getValue()).thenReturn("arg");
+    when(arg.toString()).thenReturn("\"arg\"");
     when(op.getSymbol()).thenReturn("+");
     when(op.priority()).thenReturn(1);
   }
@@ -141,7 +142,7 @@ public class ExpressionTest {
     tree.insert(op);
     tree.insert(arg);
     Expression expr = new Expression(tree);
-    assertThat(expr.toString(), is("arg + arg"));
+    assertThat(expr.toString(), is("\"arg\" + \"arg\""));
   }
   
   @Test
@@ -153,7 +154,7 @@ public class ExpressionTest {
     tree.insert(uOp);
     tree.insert(arg);
     Expression expr = new Expression(tree);
-    assertThat(expr.toString(), is("arg + -arg"));
+    assertThat(expr.toString(), is("\"arg\" + -\"arg\""));
   }
   
   @Test
@@ -169,7 +170,7 @@ public class ExpressionTest {
     tree2.insert(arg);
     tree.insert(tree2);
     Expression expr = new Expression(tree);
-    assertThat(expr.toString(), is("arg * (arg + arg)"));
+    assertThat(expr.toString(), is("\"arg\" * (\"arg\" + \"arg\")"));
   }
   
   @Test
@@ -188,18 +189,19 @@ public class ExpressionTest {
     tree.insert(uOp);
     tree.insert(tree2);
     Expression expr = new Expression(tree);
-    assertThat(expr.toString(), is("arg * -(arg + arg)"));
+    assertThat(expr.toString(), is("\"arg\" * -(\"arg\" + \"arg\")"));
   }
   
   @Test
   public void toStringVariableNotInMap() {
     VariableArgument vArg = mock(VariableArgument.class);
+    when(vArg.toString()).thenReturn("null");
     variables.put("y", mock(VariableArgument.class));
     tree.insert(vArg);
     tree.insert(op);
     tree.insert(arg);
     Expression expr = new Expression(tree, variables);
-    assertThat(expr.toString(), is("null + arg"));
+    assertThat(expr.toString(), is("null + \"arg\""));
   }
   
   @Test
@@ -210,7 +212,7 @@ public class ExpressionTest {
     tree.insert(op);
     tree.insert(arg);
     Expression expr = new Expression(tree, variables);
-    assertThat(expr.toString(), is("x + arg"));
+    assertThat(expr.toString(), is("x + \"arg\""));
   }
   
   @Test
@@ -238,7 +240,7 @@ public class ExpressionTest {
     main.insert(op2);
     main.insert(arg);
     Expression expr = new Expression(main);
-    assertThat(expr.toString(), is("(arg + arg) * arg"));
+    assertThat(expr.toString(), is("(\"arg\" + \"arg\") * \"arg\""));
   }
   
   @Test
@@ -255,7 +257,7 @@ public class ExpressionTest {
     main.insert(op);
     main.insert(arg);
     Expression expr = new Expression(main);
-    assertThat(expr.toString(), is("arg * arg + arg"));
+    assertThat(expr.toString(), is("\"arg\" * \"arg\" + \"arg\""));
   }
   
   @Test
@@ -270,7 +272,7 @@ public class ExpressionTest {
     main.insert(op2);
     main.insert(arg);
     Expression expr = new Expression(main);
-    assertThat(expr.toString(), is("arg + arg * arg"));
+    assertThat(expr.toString(), is("\"arg\" + \"arg\" * \"arg\""));
   }
   
   private static abstract class NotEvaluableArg extends Argument implements NotEvaluable { }

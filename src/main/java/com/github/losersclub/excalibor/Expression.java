@@ -82,7 +82,7 @@ public final class Expression {
       if (node.hasUnaryOp()) {
         sb.append(node.uOp.getSymbol());
       }
-      Object val = node.value.getValue();
+      String val = null;
       if (node.value instanceof NotEvaluable) {
         for (Entry<String, VariableArgument> e : this.variables.entrySet()) {
           if (e.getValue() == node.value) {
@@ -91,7 +91,7 @@ public final class Expression {
           }
         }
       }
-      sb.append(val);
+      sb.append(val == null ? node.value.toString() : val);
     }
     if (node.isOp()) {
       sb.append(" " + node.op.getSymbol() + " ");

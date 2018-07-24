@@ -53,6 +53,11 @@ public class CharArgument extends NumberArgument {
   }
   
   @Override
+  public String toString() {
+    return "'" + this.value + "'";
+  }
+  
+  @Override
   protected double add(double rhs) {
     return this.value + rhs;
   }
