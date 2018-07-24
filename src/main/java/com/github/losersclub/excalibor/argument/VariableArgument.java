@@ -39,7 +39,7 @@ public class VariableArgument extends Argument implements NotEvaluable {
   @Override
   public Argument convert() {
     if (this.getValue() == null) {
-      return null;
+      return this;
     }
     Argument out = null;
     for (Argument parser : compiler.getArguments()) {
@@ -47,6 +47,6 @@ public class VariableArgument extends Argument implements NotEvaluable {
         return out;
       }
     }
-    return null;
+    return this;
   }
 }

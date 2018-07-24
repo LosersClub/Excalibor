@@ -231,7 +231,8 @@ public final class EvalTree {
           return false;
         }
         if (!((NotEvaluable)arg).isEvaluable()) {
-          throw new NotEvaluableException(String.format("Unable to evaluate %s", arg));
+          throw new NotEvaluableException(String.format("Unable to evaluate %s",
+              arg.getClass().getName()));
         } 
       }
       return true;

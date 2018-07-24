@@ -6,8 +6,9 @@ public abstract class Argument {
   public abstract Argument build(Object obj);
   public abstract Object getValue();
   
-  public Argument convert(VariableArgument vArg) {
-    if (vArg.getValue() == null || vArg.getValue().getClass() != this.getValue().getClass()) {
+  public Argument convert(Argument vArg) {
+    if (this.getValue() == null || vArg.getValue() == null ||
+        vArg.getValue().getClass() != this.getValue().getClass()) {
       return null;
     }
     return build(vArg.getValue());

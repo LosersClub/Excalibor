@@ -60,14 +60,14 @@ public class VariableArgumentTest {
 
   @Test
   public void convertNull() {
-    Assert.assertTrue(this.vArg.convert() == null);
+    Assert.assertTrue(this.vArg.convert() == this.vArg);
   }
 
   @Test
   public void noValidParser() {
     Mockito.when(compiler.getArguments()).thenReturn(new ArrayList<>());
     this.vArg.setValue(new Object());
-    Assert.assertTrue(this.vArg.convert() == null);
+    Assert.assertTrue(this.vArg.convert() == this.vArg);
   }
 
   @Test
