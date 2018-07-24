@@ -29,6 +29,11 @@ public class VariableArgumentTest {
   public void isEvaluable() {
     Assert.assertFalse(this.vArg.isEvaluable());
   }
+  
+  @Test
+  public void nullConvert() {
+    Assert.assertTrue(this.vArg.convert(this.vArg) == null);
+  }
 
   @Test
   public void setValue() {
