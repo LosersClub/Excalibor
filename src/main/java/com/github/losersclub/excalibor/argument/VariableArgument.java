@@ -16,11 +16,6 @@ public class VariableArgument extends Argument implements NotEvaluable {
     return this.evaluable;
   }
 
-  @Override
-  public void setEvaluable(boolean value) {
-    this.evaluable = value;
-  }
-
   public void setValue(Object obj) {
     this.obj = obj;
     this.evaluable = this.obj != null;

@@ -31,12 +31,6 @@ public class VariableArgumentTest {
   }
 
   @Test
-  public void setEvaluable() {
-    this.vArg.setEvaluable(true);
-    Assert.assertTrue(this.vArg.isEvaluable());
-  }
-
-  @Test
   public void setValue() {
     Object newObj = new Object();
     this.vArg.setValue(null);
