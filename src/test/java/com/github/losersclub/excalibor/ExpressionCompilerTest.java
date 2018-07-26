@@ -154,19 +154,6 @@ public class ExpressionCompilerTest {
     this.expComp.evaluateString(".abc", this.variables);
   }
 
-  @Test
-  public void testIsValidVarName() {
-    String[] badStrings = {".abc", "abc.", ".abc.", "a.bc", "a bc", "a!bc",
-        "a-bc", "__", "123", "12_", "12a", " abc", "abc(", "abc()"};
-    String[] goodStrings = {"abc", "a_bc", "_abc_", "a12", "a_12", "_ab", "ab_", "_12", "_a12"};
-    for (String s : badStrings) {
-      Assert.assertFalse(this.expComp.isValidVarName(s));
-    }
-    for (String s : goodStrings) {
-      Assert.assertTrue(this.expComp.isValidVarName(s));
-    }
-  }
-
   @Test(expected=IllegalArgumentException.class)
   public void testBuildTreeInvalidInput()
       throws IllegalArgumentException, AmbiguousArgumentException {

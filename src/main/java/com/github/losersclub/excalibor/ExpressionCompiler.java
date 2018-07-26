@@ -109,31 +109,6 @@ public class ExpressionCompiler {
     this.operators.remove(opSymbol);
   }
 
-  private int reachEndOfContainer(String expression, int startIndex,
-      char endChar, StringBuilder buffer) {
-    int index = startIndex + 1;
-    int containerCounter = 1;
-    char previousChar = endChar;
-    while (index != expression.length()) {
-      if (expression.charAt(index) == endChar && previousChar != '\\') {
-        containerCounter--;
-        if (containerCounter == 0) {
-          return index;
-        }
-      }
-      else if (expression.charAt(index) == expression.charAt(startIndex) && previousChar != '\\') {
-        containerCounter++;
-      }
-      previousChar = expression.charAt(index);
-      buffer.append(previousChar);
-      index++;
-    }
-    throw new IllegalArgumentException("Unclosed container. Expected an " + endChar);
-  }
-
-  private List<Character> acceptableSymbols =
-      Arrays.asList('\'', '"', '[', ']', '(', ')', '.', '_');
-
   EvalTree buildTree(String expression, Map<String, VariableArgument> variables)
       throws IllegalArgumentException, AmbiguousArgumentException {
 
@@ -152,20 +127,16 @@ public class ExpressionCompiler {
         continue;
       }
       // Handle containers
-      if (c == '"') {
-        buffer.append("\"");
-        i = reachEndOfContainer(expression, i, '\"', buffer);
-        buffer.append("\"");
-      } else if (c == '\'') {
-        buffer.append("\'");
-        i = reachEndOfContainer(expression, i, '\'', buffer);
-        buffer.append("\'");
+      if (c == '"' || c == '\'') {
+        buffer.append(c);
+        i = ExcaliborUtils.reachEndOfContainer(expression, i, c, buffer);
+        buffer.append(c);
       } else if (c == '(') {
         mathContainerEncountered = buffer.length() == 0;
         if (!mathContainerEncountered) {
           buffer.append('(');
         }
-        i = reachEndOfContainer(expression, i, ')', buffer);
+        i = ExcaliborUtils.reachEndOfContainer(expression, i, ')', buffer);
         if (!mathContainerEncountered) {
           buffer.append(')');
         }
@@ -174,17 +145,17 @@ public class ExpressionCompiler {
         if (!mathContainerEncountered) {
           buffer.append('[');
         }
-        i = reachEndOfContainer(expression, i, ']', buffer);
+        i = ExcaliborUtils.reachEndOfContainer(expression, i, ']', buffer);
         if (!mathContainerEncountered) {
           buffer.append(']');
         }
-      } else if (this.isSymbol(c)) {
+      } else if (ExcaliborUtils.isSymbol(c)) {
         if (buffer.length() > 0) {
           Argument arg = evaluateString(buffer.toString(), variables);
           tree.insert(arg);
           buffer.setLength(0);
         }
-        while (isSymbol(expression.charAt(i))) {
+        while (ExcaliborUtils.isSymbol(expression.charAt(i))) {
           buffer.append(expression.charAt(i));
           i++;
         }
@@ -222,29 +193,6 @@ public class ExpressionCompiler {
 
   }
 
-  boolean isValidVarName(String str) {
-    boolean underscoreEncountered = false;
-    boolean numberEncountered = false;
-    boolean letterEncountered = false;
-    if (str.charAt(0) == '.' || str.charAt(str.length() - 1) == '.'
-        || Character.isDigit(str.charAt(0))) {
-      return false;
-    }
-    for (int i = 0; i < str.length(); i++) {
-      char c = str.charAt(i);
-      if (c == '.' || (!Character.isDigit(c) && !Character.isLetter(c) && c != '_')) {
-        return false;
-      }
-      letterEncountered = letterEncountered || Character.isLetter(c);
-      numberEncountered = numberEncountered || Character.isDigit(c);
-      underscoreEncountered = underscoreEncountered || str.charAt(i) == '_';
-    }
-    if (underscoreEncountered && !(numberEncountered || letterEncountered)) {
-      return false;
-    }
-    return true;
-  }
-
   Argument evaluateString(String stringArg, Map<String, VariableArgument> variables)
       throws AmbiguousArgumentException, IllegalArgumentException {
     Argument viableArg = null;
@@ -259,7 +207,7 @@ public class ExpressionCompiler {
       }
     }
     if (viableArg == null) {
-      if (isValidVarName(stringArg)) {
+      if (ExcaliborUtils.isValidVarName(stringArg)) {
         if (!variables.containsKey(stringArg)) {
           variables.put(stringArg, new VariableArgument(this));
         }
@@ -279,11 +227,6 @@ public class ExpressionCompiler {
     tree.precompute();
     Expression expr = new Expression(tree, variables);
     return expr;
-  }
-
-  private boolean isSymbol(char c) {
-    return !Character.isWhitespace(c) && !Character.isDigit(c) && !Character.isLetter(c)
-        && !(this.acceptableSymbols.contains(c));
   }
 
   protected ParsedOperator parseOperator(final String expression, int startIndex) {

@@ -104,7 +104,7 @@ public final class EvalTree {
       }
       
       throw new IllegalArgumentException("No right-hand argument set (double non-unary operators"
-          + " is not allowed)");
+          + " are not allowed)");
     }
     
     size += 1;
