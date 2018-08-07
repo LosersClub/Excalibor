@@ -2,6 +2,7 @@ package com.github.losersclub.excalibor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,11 +63,11 @@ public class ExpressionCompiler {
   }
 
   public List<Argument> getArguments() {
-    return this.arguments;
+    return Collections.unmodifiableList(this.arguments);
   }
 
   public Map<String, Operator> getOperators() {
-    return this.operators;
+    return Collections.unmodifiableMap(this.operators);
   }
 
   Operator getOperator(String key) {
@@ -197,7 +198,7 @@ public class ExpressionCompiler {
       throws AmbiguousArgumentException, IllegalArgumentException {
     Argument viableArg = null;
     Argument parsedArg = null;
-    for (Argument a : this.arguments) {
+    for (Argument a : this.getArguments()) {
       if ((parsedArg = a.parse(stringArg)) != null) {
         if (viableArg != null) {
           throw new AmbiguousArgumentException(
@@ -235,10 +236,10 @@ public class ExpressionCompiler {
     for (int i = startIndex; i < expression.length(); i++) {
       char c = expression.charAt(i);
       buffer.append(c);
-      potentialOperators.add(new ParsedOperator(this.operators.get(buffer.toString())));
+      potentialOperators.add(new ParsedOperator(this.getOperators().get(buffer.toString())));
       for (int k = 0; k < buffer.length() - 1; k++) {
         if (potentialOperators.get(k).isOpValid()) {
-          Operator unary = operators.get(buffer.toString().substring(k+1));
+          Operator unary = this.getOperators().get(buffer.toString().substring(k+1));
           if (unary instanceof UnaryOperator) {
             potentialOperators.get(k).isValid = true;
             potentialOperators.get(k).unaryOp = (UnaryOperator) unary;

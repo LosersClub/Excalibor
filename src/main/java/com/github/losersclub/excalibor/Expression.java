@@ -24,7 +24,7 @@ public final class Expression {
   }
   
   public Object evaluate() throws NotEvaluableException {
-    if (this.tree.getRoot().isArg() && !(this.tree.getRoot().value instanceof NotEvaluable)) {
+    if (this.computed()) {
       return tree.getRoot().value.getValue();
     }
     EvalTree copy = new EvalTree(this.tree);

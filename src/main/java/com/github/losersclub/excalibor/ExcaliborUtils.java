@@ -50,11 +50,14 @@ public final class ExcaliborUtils {
   }
   
   public static boolean isValidVarName(String str) {
+    if (str == null) {
+      return false;
+    }
+    str = str.trim();
     boolean underscoreEncountered = false;
     boolean numberEncountered = false;
     boolean letterEncountered = false;
-    if (str.charAt(0) == '.' || str.charAt(str.length() - 1) == '.'
-        || Character.isDigit(str.charAt(0))) {
+    if (str.isEmpty() || Character.isDigit(str.charAt(0))) {
       return false;
     }
     for (int i = 0; i < str.length(); i++) {
@@ -62,9 +65,9 @@ public final class ExcaliborUtils {
       if (c == '.' || (!Character.isDigit(c) && !Character.isLetter(c) && c != '_')) {
         return false;
       }
-      letterEncountered = letterEncountered || Character.isLetter(c);
-      numberEncountered = numberEncountered || Character.isDigit(c);
-      underscoreEncountered = underscoreEncountered || str.charAt(i) == '_';
+      letterEncountered |= Character.isLetter(c);
+      numberEncountered |= Character.isDigit(c);
+      underscoreEncountered |= str.charAt(i) == '_';
     }
     if (underscoreEncountered && !(numberEncountered || letterEncountered)) {
       return false;

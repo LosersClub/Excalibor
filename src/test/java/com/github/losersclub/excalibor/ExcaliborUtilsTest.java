@@ -6,8 +6,8 @@ import org.junit.Test;
 public class ExcaliborUtilsTest {
   @Test
   public void testIsValidVarName() {
-    String[] badStrings = {".abc", "abc.", ".abc.", "a.bc", "a bc", "a!bc",
-        "a-bc", "__", "123", "12_", "12a", " abc", "abc(", "abc()"};
+    String[] badStrings = {null, "", ".abc", "abc.", ".abc.", "a.bc", "a bc", "a!bc",
+        "a-bc", "__", "123", "12_", "12a", "abc(", "abc()"};
     String[] goodStrings = {"abc", "a_bc", "_abc_", "a12", "a_12", "_ab", "ab_", "_12", "_a12"};
     for (String s : badStrings) {
       Assert.assertFalse(ExcaliborUtils.isValidVarName(s));
