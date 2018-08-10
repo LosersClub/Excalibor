@@ -9,7 +9,7 @@ import com.github.losersclub.excalibor.EvalTree.Node;
 import com.github.losersclub.excalibor.argument.NotEvaluable;
 import com.github.losersclub.excalibor.argument.VariableArgument;
 
-public final class Expression {
+public class Expression {
   private final EvalTree tree;
   private final Map<String, VariableArgument> variables;
 
