@@ -4,7 +4,6 @@ dist: trusty
 
 before_install:
 - git clone -b travis `git config --get remote.origin.url` travis
-- chmod +x travis/deploy.sh
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in travis/pubring.gpg.enc -out travis/pubring.gpg -d
 - openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in travis/secring.gpg.enc -out travis/secring.gpg -d
 script:
