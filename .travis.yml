@@ -2,7 +2,17 @@ language: java
 sudo: false
 dist: trusty
 
+before_install:
+- git clone -b travis `git config --get remote.origin.url` travis
+- chmod +x travis/deploy.sh
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in travis/pubring.gpg.enc -out travis/pubring.gpg -d
+- openssl aes-256-cbc -pass pass:$ENCRYPTION_PASSWORD -in travis/secring.gpg.enc -out travis/secring.gpg -d
 script:
 - mvn verify
 after_success:
 - bash <(curl -s https://codecov.io/bash)
+- travis/deploy.sh
+env:
+  global:
+  - CI_USERNAME=unleashurgeek
+  - GPG_DIR=travis
