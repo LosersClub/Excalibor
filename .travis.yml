@@ -11,7 +11,9 @@ script:
 - mvn verify
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- travis/deploy.sh
+- '[ ${TRAVIS_PULL_REQUEST} == "false" ] && mvn -P ossrh clean deploy --settings travis/settings.xml
+  -DskipTests=true -B || mvn -P ossrh clean verify --settings travis/settings.xml
+  -DskipTests=true -B'
 env:
   global:
   - CI_USERNAME=unleashurgeek
