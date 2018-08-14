@@ -20,5 +20,4 @@ public class OrOperator extends LogicOperator {
   public Argument evaluateLogic(LogicalArgument lhs, Argument rhs) {
     return lhs.or(rhs);
   }
-
 }

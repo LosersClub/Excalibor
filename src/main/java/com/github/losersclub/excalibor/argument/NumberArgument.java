@@ -1,5 +1,7 @@
 package com.github.losersclub.excalibor.argument;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
+
 public abstract class NumberArgument extends ComparableArgument {
   
   public Argument add(Argument rhs) {
@@ -32,10 +34,10 @@ public abstract class NumberArgument extends ComparableArgument {
     if (rhs instanceof NumberArgument) {
       return ((NumberArgument)(rhs)).getMathTypeValue();
     }
-    throw new IllegalArgumentException(String.format(
-        "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.getValue(),
-        this.getValue().getClass().getName(), rhs.getValue().toString(),
-        rhs.getValue().getClass().getName()));
+    throw new InvalidExpressionException(String.format(
+        "Incompatible types for \"%s\" operator: right-hand side is of type \"%s\", but only "
+        + "\"%s\" is supported", op, rhs.getClass().getName(),
+        NumberArgument.class.getName()));
   }
   
   private Argument cast(Argument rhs, double val) {

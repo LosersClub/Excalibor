@@ -20,5 +20,4 @@ public class XOrOperator extends LogicOperator {
   public Argument evaluateLogic(LogicalArgument lhs, Argument rhs) {
     return lhs.xor(rhs);
   }
-
 }

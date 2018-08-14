@@ -29,7 +29,7 @@ public class ExcaliborUtilsTest {
     }
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void reachEndOfContainerUnclosed() {
     ExcaliborUtils.reachEndOfContainer("\"test", 0, '"', new StringBuilder());
   }
@@ -37,17 +37,15 @@ public class ExcaliborUtilsTest {
   @Test
   public void reachEndOfContainer() {
     StringBuilder sb = new StringBuilder();
-    int out = ExcaliborUtils.reachEndOfContainerNoThrow("\"basic\"", 0, '"', sb);
+    int out = ExcaliborUtils.reachEndOfContainer("\"basic\"", 0, '"', sb);
     Assert.assertTrue(out == 6);
-    out = ExcaliborUtils.reachEndOfContainerNoThrow("([\"diff\"])", 0, ')', sb);
+    out = ExcaliborUtils.reachEndOfContainer("([\"diff\"])", 0, ')', sb);
     Assert.assertTrue(out == 9);
-    out = ExcaliborUtils.reachEndOfContainerNoThrow("\"Test()\"", 5, ')', sb);
+    out = ExcaliborUtils.reachEndOfContainer("\"Test()\"", 5, ')', sb);
     Assert.assertTrue(out == 6);
-    out = ExcaliborUtils.reachEndOfContainerNoThrow("[mult[iple]ones]", 0, ']', sb);
+    out = ExcaliborUtils.reachEndOfContainer("[mult[iple]ones]", 0, ']', sb);
     Assert.assertTrue(out == 15);
-    out = ExcaliborUtils.reachEndOfContainerNoThrow("\"Excap\\\"ed\"", 0, '"', sb);
+    out = ExcaliborUtils.reachEndOfContainer("\"Excap\\\"ed\"", 0, '"', sb);
     Assert.assertTrue(out == 10);
-    out = ExcaliborUtils.reachEndOfContainerNoThrow("none", 0, '*', sb);
-    Assert.assertTrue(out == -1);
   }
 }

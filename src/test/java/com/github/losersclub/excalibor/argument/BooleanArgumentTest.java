@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.VariableArgument;
 import com.github.losersclub.excalibor.argument.primitives.BooleanArgument;
@@ -62,7 +63,7 @@ public class BooleanArgumentTest {
     Assert.assertFalse((boolean)boolArgTrue.not().getValue());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testComparesInvalidRHS() throws Exception {
     IntArgument intArg = new IntArgument();
     boolArgTrue.equals(intArg);

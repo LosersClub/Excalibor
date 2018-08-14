@@ -1,5 +1,6 @@
 package com.github.losersclub.excalibor.argument.primitives;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.NumberArgument;
 
@@ -126,6 +127,6 @@ public class CharArgument extends NumberArgument {
       case "\\\\":
         return '\\';
     }
-    throw new IllegalArgumentException("Unknown escape sequence: \"'" + s + "'\"");
+    throw new InvalidExpressionException("Unknown escape sequence: \"'" + s + "'\"");
   }
 }

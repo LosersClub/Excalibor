@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.primitives.BooleanArgument;
 import com.github.losersclub.excalibor.argument.primitives.IntArgument;
@@ -336,7 +337,7 @@ public class OperatorsTest {
   private static boolean exceptionHelper(Runnable call) {
     try {
       call.run();
-    } catch (IllegalArgumentException e) {
+    } catch (InvalidExpressionException e) {
       return true;
     }
     return false;

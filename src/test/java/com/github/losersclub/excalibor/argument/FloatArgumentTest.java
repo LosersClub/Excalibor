@@ -3,6 +3,7 @@ package com.github.losersclub.excalibor.argument;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.primitives.FloatArgument;
 import com.github.losersclub.excalibor.argument.primitives.IntArgument;
@@ -39,12 +40,12 @@ public class FloatArgumentTest {
     Assert.assertTrue(built instanceof FloatArgument && (float)built.getValue() == 2.4f);
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBuildCast() {
     floatArgOne.build("test");
   }
 
-  @Test (expected = IllegalArgumentException.class)
+  @Test (expected = InvalidExpressionException.class)
   public void testInvalidRHS() {
     StringArgument stringArg = new StringArgument();
     floatArgOne.add(stringArg);

@@ -149,18 +149,18 @@ public class ExpressionCompilerTest {
     noDefaults.evaluateString("yay!", this.variables);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testEvaluateStringInvalidVarName() throws Exception {
     this.expComp.evaluateString(".abc", this.variables);
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected=InvalidExpressionException.class)
   public void testBuildTreeInvalidInput()
-      throws IllegalArgumentException, AmbiguousArgumentException {
+      throws InvalidExpressionException, AmbiguousArgumentException {
     this.expComp.buildTree(null, this.variables);
   }
 
-  @Test(expected=IllegalArgumentException.class)
+  @Test(expected=InvalidExpressionException.class)
   public void testBuildTreeEmpty() throws Exception {
     this.expComp.buildTree("\t\n  ", this.variables);
   }
@@ -208,7 +208,7 @@ public class ExpressionCompilerTest {
     assertThat(actual, isSame(expected.getRoot()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBuildTreeUnclosedContainer() {
     String expression = "(4 + 3";
     expComp.buildTree(expression, variables);
@@ -235,7 +235,7 @@ public class ExpressionCompilerTest {
     assertThat(actual, isSame(expected.getRoot()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBuildTreeVarFxn() {
     // Test something that would be a function call. By default, it'll throw, but
     // if someone adds a function Argument or something it should work.
@@ -245,7 +245,7 @@ public class ExpressionCompilerTest {
     expComp.buildTree(expression, variables);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBuildTreeVarIndexAccess() {
     //Test something that would be an index access. By default, it'll throw, but
     // if someone adds a function Argument or something it should work.
@@ -268,14 +268,14 @@ public class ExpressionCompilerTest {
     assertThat(actual, isSame(expected.getRoot()));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBuildTreeBadOperator() {
     // 4 -/5
     String expression = "4 -/5";
     expComp.buildTree(expression, variables);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBuildTreeNonexistantOperator() {
     // 4 ~5
     String expression = "4 ~5";

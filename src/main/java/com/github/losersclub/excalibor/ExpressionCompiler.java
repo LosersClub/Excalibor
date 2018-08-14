@@ -74,11 +74,11 @@ public class ExpressionCompiler {
     return this.operators.get(key);
   }
 
-  public void addArgument(Argument arg) {
-    // Reject duplicate arguments
+  public void addArgument(Argument arg) throws IllegalArgumentException {
     for (Argument a : this.arguments) {
       if (a.getClass() == arg.getClass()) {
-        throw new IllegalArgumentException("Duplicate Arguments found.");
+        throw new IllegalArgumentException("The Argument \"" + this.getClass().getName()
+            + "\" is already registered to this compiler instance.");
       }
     }
     this.arguments.add(arg);
@@ -88,15 +88,16 @@ public class ExpressionCompiler {
     return this.arguments.remove(arg);
   }
 
-  public void addOperator(Operator op) {
+  public void addOperator(Operator op) throws IllegalArgumentException, AmbiguousOperatorException {
     for (Operator o : this.operators.values()) {
       if (o.getClass() == op.getClass()) {
-        throw new IllegalArgumentException("Duplicate Operators found.");
+        throw new IllegalArgumentException("The Operator \"" + this.getClass().getName()
+            + "\" is already registered to this compiler instance.");
       }
       if (o.getSymbol().equals(op.getSymbol())) {
-        throw new AmbiguousOperatorException("Duplicate operator symbols used: " + o.getSymbol()
-            + ". Classes in conflict: " + o.getClass().getSimpleName() + ", "
-            + op.getClass().getSimpleName());
+        throw new AmbiguousOperatorException("Duplicate operator symbol used: \"" + o.getSymbol()
+            + "\". Operators in conflict: \"" + o.getClass().getName() + "\" vs \""
+            + op.getClass().getName() + "\".");
       }
     }
     this.operators.put(op.getSymbol(), op);
@@ -111,15 +112,14 @@ public class ExpressionCompiler {
   }
 
   EvalTree buildTree(String expression, Map<String, VariableArgument> variables)
-      throws IllegalArgumentException, AmbiguousArgumentException {
+      throws InvalidExpressionException, AmbiguousArgumentException {
 
     boolean mathContainerEncountered = false;
     if (expression == null || (expression = expression.trim()).length() == 0) {
-      throw new IllegalArgumentException("Expression cannot be null or an empty string.");
+      throw new InvalidExpressionException("An expression cannot be a null or empty string.");
     }
 
     EvalTree tree = new EvalTree();
-
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < expression.length(); i++) {
       char c = expression.charAt(i);
@@ -163,7 +163,8 @@ public class ExpressionCompiler {
         i--;
         ParsedOperator op = parseOperator(buffer.toString(), 0);
         if (op == null) {
-          throw new IllegalArgumentException("Unrecognized operator: " + buffer.toString());
+          throw new InvalidExpressionException("Unrecognized operator: \"" + buffer.toString()
+              + "\"");
         }
         tree.insert(op.op);
         if (op.isUnaryOpValid()) {
@@ -195,34 +196,36 @@ public class ExpressionCompiler {
   }
 
   Argument evaluateString(String stringArg, Map<String, VariableArgument> variables)
-      throws AmbiguousArgumentException, IllegalArgumentException {
+      throws AmbiguousArgumentException, InvalidExpressionException {
+    Argument viableParser = null;
     Argument viableArg = null;
     Argument parsedArg = null;
     for (Argument a : this.getArguments()) {
       if ((parsedArg = a.parse(stringArg)) != null) {
         if (viableArg != null) {
-          throw new AmbiguousArgumentException(
-              "More than one possible type for the argument: " + stringArg);
+          throw new AmbiguousArgumentException("Multiple valid arguments for input \""
+              + stringArg + "\". Successfully parsed by \"" + viableParser.getClass().getName()
+              + "\" and \"" + a.getClass().getName() + "\". Unable to compile Expression until "
+              + "ambiguity is resolved.");
         }
         viableArg = parsedArg;
+        viableParser = a;
       }
     }
     if (viableArg == null) {
       if (ExcaliborUtils.isValidVarName(stringArg)) {
         if (!variables.containsKey(stringArg)) {
-          variables.put(stringArg, new VariableArgument(this));
+          variables.put(stringArg, new VariableArgument(this, stringArg));
         }
         return variables.get(stringArg);
       }
-      else {
-        throw new IllegalArgumentException("Unrecognized argument: " + stringArg);
-      }
+      throw new InvalidExpressionException("Unrecognized argument: \"" + stringArg + "\".");
     }
     return viableArg;
   }
 
   public Expression compile(String expression)
-      throws IllegalArgumentException, AmbiguousArgumentException {
+      throws InvalidExpressionException, AmbiguousArgumentException {
     Map<String, VariableArgument> variables = new HashMap<String, VariableArgument>();
     EvalTree tree = buildTree(expression, variables);
     tree.precompute();
@@ -230,7 +233,7 @@ public class ExpressionCompiler {
     return expr;
   }
 
-  protected ParsedOperator parseOperator(final String expression, int startIndex) {
+  private ParsedOperator parseOperator(final String expression, int startIndex) {
     List<ParsedOperator> potentialOperators = new ArrayList<ParsedOperator>(4);
     StringBuilder buffer = new StringBuilder();
     for (int i = startIndex; i < expression.length(); i++) {

@@ -15,15 +15,6 @@ public final class ExcaliborUtils {
     return Collections.unmodifiableCollection(acceptableSymbols);
   }
   
-  public static int reachEndOfContainerNoThrow(String expression, int startIndex,
-      char endChar, StringBuilder buffer) {
-    try {
-      return reachEndOfContainer(expression, startIndex, endChar, buffer);
-    } catch (IllegalArgumentException e) {
-      return -1;
-    }
-  }
-  
   public static int reachEndOfContainer(String expression, int startIndex,
       char endChar, StringBuilder buffer) {
     int containerCounter = 1;
@@ -41,7 +32,7 @@ public final class ExcaliborUtils {
       previousChar = expression.charAt(index);
       buffer.append(previousChar);
     }
-    throw new IllegalArgumentException("Unclosed container. Expected an " + endChar);
+    throw new InvalidExpressionException("Unclosed container. Expected an " + endChar);
   }
   
   public static boolean isSymbol(char c) {

@@ -1,5 +1,6 @@
 package com.github.losersclub.excalibor.operator.primitives;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.NumberArgument;
 import com.github.losersclub.excalibor.operator.UnaryOperator;
@@ -19,8 +20,9 @@ public class NegateOperator extends UnaryOperator {
   @Override
   public Argument evaluate(Argument rhs) {
     if (!(rhs instanceof NumberArgument)) {
-      throw new IllegalArgumentException(String.format("Incompatible type for %s operation",
-          this.getSymbol()));
+      throw new InvalidExpressionException(String.format("Incompatible types for \"%s\" unary "
+          + "operator. right-hand side is of type \"%s\" but must be of type \"%s\"",
+          this.getSymbol(), rhs.getClass().getName(), NumberArgument.class.getName()));
     }
     return ((NumberArgument)rhs).negate();
   }
@@ -31,10 +33,10 @@ public class NegateOperator extends UnaryOperator {
       return this.evaluate(rhs);
     }
     if (!(lhs instanceof NumberArgument)) {
-      throw new IllegalArgumentException(String.format("Incompatible types for %s operation",
-          this.getSymbol()));
+      throw new InvalidExpressionException(String.format("Incompatible types for \"%s\" operator. "
+          + "left-hand side is of type \"%s\" but must be of type \"%s\"",
+          this.getSymbol(), lhs.getClass().getName(), NumberArgument.class.getName()));
     }
     return ((NumberArgument)lhs).subtract(rhs);
   }
-
 }

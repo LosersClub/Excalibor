@@ -3,6 +3,7 @@ package com.github.losersclub.excalibor.argument;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.primitives.ByteArgument;
 import com.github.losersclub.excalibor.argument.primitives.IntArgument;
@@ -32,12 +33,12 @@ public class ByteArgumentTest {
     Assert.assertTrue(built instanceof ByteArgument && (byte)built.getValue() == (byte)2);
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBuildCast() {
     byteArgOne.build("test");
   }
 
-  @Test (expected = IllegalArgumentException.class)
+  @Test (expected = InvalidExpressionException.class)
   public void testInvalidRHS() {
     StringArgument stringArg = new StringArgument();
     byteArgOne.add(stringArg);

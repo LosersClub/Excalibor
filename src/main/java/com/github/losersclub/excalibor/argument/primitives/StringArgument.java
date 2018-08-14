@@ -1,5 +1,6 @@
 package com.github.losersclub.excalibor.argument.primitives;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.ComparableArgument;
 
@@ -67,7 +68,7 @@ public class StringArgument extends ComparableArgument {
     if (rhs.getValue() instanceof String) {
       return (String)rhs.getValue();
     }
-    throw new IllegalArgumentException(String.format(
+    throw new InvalidExpressionException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
         String.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }
@@ -91,7 +92,7 @@ public class StringArgument extends ComparableArgument {
       case '\\':
         return "\\";
     }
-    throw new IllegalArgumentException("Unknown escape sequence: \"\\" + c + "\"");
+    throw new InvalidExpressionException("Unknown escape sequence: \"\\" + c + "\"");
   }
 
 }

@@ -3,9 +3,7 @@ package com.github.losersclub.excalibor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import com.github.losersclub.excalibor.EvalTree.Node;
 import com.github.losersclub.excalibor.argument.NotEvaluable;
 import com.github.losersclub.excalibor.argument.VariableArgument;
 
@@ -70,53 +68,6 @@ public class Expression {
   
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    toString(sb, tree.getRoot());
-    return sb.toString();
-  }
-  
-  private void toString(StringBuilder sb, Node node) {
-    if (node == null) {
-      return;
-    }
-    if (node.isOp() && node.left.isOp() && node.left.op.priority() < node.op.priority()) {
-      sb.append("(");
-    }
-    toString(sb, node.left);
-    if (node.isOp() && node.left.isOp() && node.left.op.priority() < node.op.priority()) {
-      sb.append(")");
-    }
-    
-    if (node.isArg()) {
-      if (node.hasUnaryOp()) {
-        sb.append(node.uOp.getSymbol());
-      }
-      String val = null;
-      if (node.value instanceof NotEvaluable) {
-        for (Entry<String, VariableArgument> e : this.variables.entrySet()) {
-          if (e.getValue() == node.value) {
-            val = e.getKey();
-            break;
-          }
-        }
-      }
-      sb.append(val == null ? node.value.toString() : val);
-    }
-    if (node.isOp()) {
-      sb.append(" " + node.op.getSymbol() + " ");
-    }
-    
-    if (node.isOp() && node.right.isOp()) {
-      if (node.right.hasUnaryOp()) {
-        sb.append(node.right.uOp.getSymbol());
-      }
-      if (node.right.op.priority() < node.op.priority()) {
-        sb.append("(");
-      }
-    }
-    toString(sb, node.right);
-    if (node.isOp() && node.right.isOp() && node.right.op.priority() < node.op.priority()) {
-      sb.append(")");
-    }
+    return this.tree.toString();
   }
 }

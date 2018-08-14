@@ -1,5 +1,6 @@
 package com.github.losersclub.excalibor.argument.primitives;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.LogicalArgument;
 
@@ -62,7 +63,7 @@ public class BooleanArgument extends LogicalArgument {
     if (rhs.getValue() instanceof Boolean) {
       return (boolean)rhs.getValue();
     }
-    throw new IllegalArgumentException(String.format(
+    throw new InvalidExpressionException(String.format(
         "Incompatible types for %s operation: %s is type %s, %s is type %s", op, this.value,
         Boolean.class.getName(), rhs.getValue().toString(), rhs.getValue().getClass().getName()));
   }

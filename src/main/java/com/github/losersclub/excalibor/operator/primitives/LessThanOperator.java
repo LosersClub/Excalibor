@@ -15,5 +15,4 @@ public class LessThanOperator extends CompareOperator {
   public Argument evaluateCompare(ComparableArgument lhs, Argument rhs) {
     return lhs.lessThan(rhs);
   }
-
 }

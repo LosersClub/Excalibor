@@ -15,5 +15,4 @@ public class MultiplyOperator extends MathOperator {
   public Argument evaluateMath(NumberArgument lhs, Argument rhs) {
     return lhs.multiply(rhs);
   }
-
 }

@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -20,6 +21,7 @@ import com.github.losersclub.excalibor.NotEvaluableException;
 import com.github.losersclub.excalibor.EvalTree.Node;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.NotEvaluable;
+import com.github.losersclub.excalibor.argument.VariableArgument;
 import com.github.losersclub.excalibor.operator.Operator;
 import com.github.losersclub.excalibor.operator.UnaryOperator;
 
@@ -30,6 +32,13 @@ public class EvalTreeTest {
   @Mock private UnaryOperator uOp;
   EvalTree tree = new EvalTree();
   
+  @Before
+  public void before() {
+    when(op.getSymbol()).thenReturn("+");
+    when(arg.toString()).thenReturn("\"arg\"");
+    when(uOp.getSymbol()).thenReturn("-");
+  }
+  
   @Test
   public void singleArgTree() {
     tree.insert(arg);
@@ -39,7 +48,8 @@ public class EvalTreeTest {
   
   @Test
   public void insertUnary() {
-    tree.insert(arg, uOp);
+    tree.insert(uOp);
+    tree.insert(arg);
     assertThat(tree.size(), is(1));
     Assert.assertTrue(tree.valid());
   }
@@ -53,13 +63,13 @@ public class EvalTreeTest {
     Assert.assertTrue(tree.valid());
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void insertNoOp() {
     tree.insert(arg);
     tree.insert(arg);
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void insertDoubleArg() {
     tree.insert(arg);
     tree.insert(op);
@@ -67,12 +77,12 @@ public class EvalTreeTest {
     tree.insert(arg);
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void insertOpEmpty() {
     tree.insert(op);
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void insertDoubleOp() {
     tree.insert(arg);
     tree.insert(op);
@@ -100,7 +110,8 @@ public class EvalTreeTest {
   
   @Test
   public void insertUnaryThenOp() {
-    tree.insert(arg, uOp);
+    tree.insert(uOp);
+    tree.insert(arg);
     tree.insert(op);
     tree.insert(arg);
     assertThat(tree.size(), is(3));
@@ -199,7 +210,7 @@ public class EvalTreeTest {
     Assert.assertFalse(tree.valid());
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void insertInvalidTree() {
     tree.insert(new EvalTree());
   }
@@ -267,7 +278,7 @@ public class EvalTreeTest {
     assertThat(tree, isSame(expected));
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void insertTreeInvalid() {
     tree.insert(arg);
     EvalTree test = new EvalTree();
@@ -471,7 +482,8 @@ public class EvalTreeTest {
     Assert.assertFalse(test.equals(tree));
     tree.insert(op);
     Assert.assertTrue(tree.equals(test));
-    test.insert(arg, uOp);
+    test.insert(uOp);
+    test.insert(arg);
     Assert.assertFalse(tree.equals(test));
     Assert.assertFalse(test.equals(tree));
     tree.insert(arg);
@@ -505,6 +517,134 @@ public class EvalTreeTest {
     other2.insert(arg);
     Assert.assertTrue(tree.equals(other2));
     Assert.assertTrue(other2.equals(tree));
+  }
+  
+  @Test
+  public void toStringTest() {
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(arg);
+    assertThat(tree.toString(), is("\"arg\" + \"arg\""));
+  }
+  
+  @Test
+  public void toStringUOp() {
+    UnaryOperator uOp = mock(UnaryOperator.class);
+    when(uOp.getSymbol()).thenReturn("-");
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(uOp);
+    tree.insert(arg);
+    assertThat(tree.toString(), is("\"arg\" + -\"arg\""));
+  }
+  
+  @Test
+  public void toStringDepth() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    tree.insert(arg);
+    tree.insert(op2);
+    EvalTree tree2 = new EvalTree();
+    tree2.insert(arg);
+    tree2.insert(op);
+    tree2.insert(arg);
+    tree.insert(tree2);
+    assertThat(tree.toString(), is("\"arg\" * (\"arg\" + \"arg\")"));
+  }
+  
+  @Test
+  public void toStringDepthUOp() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    UnaryOperator uOp = mock(UnaryOperator.class);
+    when(uOp.getSymbol()).thenReturn("-");
+    tree.insert(arg);
+    tree.insert(op2);
+    EvalTree tree2 = new EvalTree();
+    tree2.insert(arg);
+    tree2.insert(op);
+    tree2.insert(arg);
+    tree.insert(uOp);
+    tree.insert(tree2);
+    assertThat(tree.toString(), is("\"arg\" * -(\"arg\" + \"arg\")"));
+  }
+  
+  @Test
+  public void toStringVariableNotInMap() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    when(vArg.toString()).thenReturn("null");
+    tree.insert(vArg);
+    tree.insert(op);
+    tree.insert(arg);
+    assertThat(tree.toString(), is("null + \"arg\""));
+  }
+  
+  @Test
+  public void toStringVariable() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    when(vArg.toString()).thenReturn("x");
+    tree.insert(vArg);
+    tree.insert(op);
+    tree.insert(arg);
+    assertThat(tree.toString(), is("x + \"arg\""));
+  }
+  
+  @Test
+  public void toStringVariableSame() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    when(vArg.toString()).thenReturn("x");
+    tree.insert(vArg);
+    tree.insert(op);
+    tree.insert(vArg);
+    assertThat(tree.toString(), is("x + x"));
+  }
+  
+  @Test
+  public void toStringOpFlippedPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    EvalTree sub = new EvalTree();
+    sub.insert(arg);
+    sub.insert(op);
+    sub.insert(arg);
+    main.insert(sub);
+    main.insert(op2);
+    main.insert(arg);
+    assertThat(main.toString(), is("(\"arg\" + \"arg\") * \"arg\""));
+  }
+  
+  @Test
+  public void toStringOpNormalPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    EvalTree sub = new EvalTree();
+    sub.insert(arg);
+    sub.insert(op2);
+    sub.insert(arg);
+    main.insert(sub);
+    main.insert(op);
+    main.insert(arg);
+    assertThat(main.toString(), is("\"arg\" * \"arg\" + \"arg\""));
+  }
+  
+  @Test
+  public void toStringHeapifyPriority() {
+    Operator op2 = mock(Operator.class);
+    when(op2.priority()).thenReturn(2);
+    when(op2.getSymbol()).thenReturn("*");
+    EvalTree main = new EvalTree();
+    main.insert(arg);
+    main.insert(op);
+    main.insert(arg);
+    main.insert(op2);
+    main.insert(arg);
+    assertThat(main.toString(), is("\"arg\" + \"arg\" * \"arg\""));
   }
   
   @Test

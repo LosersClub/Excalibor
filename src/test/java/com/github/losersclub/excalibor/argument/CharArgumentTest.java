@@ -3,6 +3,7 @@ package com.github.losersclub.excalibor.argument;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.primitives.CharArgument;
 import com.github.losersclub.excalibor.argument.primitives.IntArgument;
@@ -56,7 +57,7 @@ public class CharArgumentTest {
         && (char)charArgParsed.getValue() == '\\');
   }
   
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testInvalidEscape() {
     charArgOne.parse("'\\v'");
   }
@@ -72,7 +73,7 @@ public class CharArgumentTest {
     charArgOne.build("test");
   }
 
-  @Test (expected = IllegalArgumentException.class)
+  @Test (expected = InvalidExpressionException.class)
   public void testInvalidRHS() {
     StringArgument stringArg = new StringArgument();
     charArgOne.add(stringArg);

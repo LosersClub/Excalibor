@@ -37,35 +37,34 @@ public final class EvalTree {
   }
   
   public void insert(Argument arg) {
-    this.insert(arg, null);
-  }
-  
-  public void insert(Argument arg, UnaryOperator uOp) {
     Node temp = this.root;
     while (temp.right != null) {
       temp = temp.right;
     }
     
     if (temp.isArg()) {
-      throw new IllegalArgumentException("An operator must be added between two arguments");
+      throw new InvalidExpressionException("Unable to compile the given expression. "
+          + "A non-unary operator is needed between the current expression \"" + this.toString()
+          + "\" and the argument \"" + arg.toString() + "\" in order for the expression to be "
+          + "valid.");
     }
     
     size += 1;
     if (temp.isEmpty()) {
       temp.value = arg;
-      temp.uOp = uOp != null ? uOp : temp.uOp;
       return;
     }
     
     Node node = new Node();
     node.value = arg;
-    node.uOp = uOp;
     temp.right = node;
   }
   
   public void insert(EvalTree tree) {
     if (!tree.valid()) {
-      throw new IllegalArgumentException("The tree being inserted must be valid");
+      throw new InvalidExpressionException("The expression \"" + tree.toString() + "\" must be "
+          + "non-empty and completely closed. That is, it must not contain an operator without"
+          + "left-hand and right-hand arguments defined.");
     }
     
     Node temp = this.root;
@@ -73,7 +72,9 @@ public final class EvalTree {
       temp = temp.right;
     }
     if (temp.isArg()) {
-      throw new IllegalArgumentException("An operator must be added between two arguments");
+      throw new InvalidExpressionException("Unable to compile the given expression. "
+          + "A non-unary operator is needed between the current expression \"" + this.toString()
+          + "\" and the expression \"" + tree + "\" in order for the expression to be valid.");
     }
     size += tree.size;
     if (temp.isEmpty()) {
@@ -102,9 +103,10 @@ public final class EvalTree {
         }
         return;
       }
-      
-      throw new IllegalArgumentException("No right-hand argument set (double non-unary operators"
-          + " are not allowed)");
+      throw new InvalidExpressionException("An argument must exist between two non-unary "
+          + "operators. Unable to add the \"" + operator.getSymbol() + "\" operator to the "
+          + (this.root.isEmpty() ? "start of an expression." : " end of the current expression: \""
+          + this.toString() + "\""));
     }
     
     size += 1;
@@ -127,7 +129,9 @@ public final class EvalTree {
   
   public Argument evaluate() throws NotEvaluableException {
     if (!this.valid()) {
-      throw new NotEvaluableException("EvalTree is not currently valid.");
+      throw new NotEvaluableException("The expression \"" + this.toString() + "\" must be "
+          + "non-empty and completely closed before evaluating. That is, it must not contain an "
+          + "operator without left-hand and right-hand arguments defined.");
     }
     this.evaluate(this.root, false);
     return this.root.value;
@@ -189,6 +193,51 @@ public final class EvalTree {
     return node;
   }
   
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    toString(sb, this.root);
+    return sb.toString();
+  }
+  
+  private static void toString(StringBuilder sb, Node node) {
+    if (node == null) {
+      return;
+    }
+    if (node.isOp() && node.left.isOp() && node.left.op.priority() < node.op.priority()) {
+      sb.append("(");
+    }
+    toString(sb, node.left);
+    if (node.isOp() && node.left.isOp() && node.left.op.priority() < node.op.priority()) {
+      sb.append(")");
+    }
+    
+    if (node.isArg()) {
+      if (node.hasUnaryOp()) {
+        sb.append(node.uOp.getSymbol());
+      }
+      sb.append(node.value.toString());
+    }
+    if (node.isOp()) {
+      sb.append(" " + node.op.getSymbol() + " ");
+    }
+    
+    if (node.right != null) {
+      if (node.right.isOp()) {
+        if (node.right.hasUnaryOp()) {
+          sb.append(node.right.uOp.getSymbol());
+        }
+        if (node.right.op.priority() < node.op.priority()) {
+          sb.append("(");
+        }
+      }
+      toString(sb, node.right);
+      if (node.right.isOp() && node.right.op.priority() < node.op.priority()) {
+        sb.append(")");
+      }
+    }
+  }
+  
   static final class Node {
     Node left = null;
     Node right = null;
@@ -231,8 +280,8 @@ public final class EvalTree {
           return false;
         }
         if (!((NotEvaluable)arg).isEvaluable()) {
-          throw new NotEvaluableException(String.format("Unable to evaluate %s",
-              arg.getClass().getName()));
+          throw new NotEvaluableException("Unable to evaluate the argument \"" + arg.toString()
+              + "\" defined by the class \"" + arg.getClass().getName() + "\"."); 
         } 
       }
       return true;

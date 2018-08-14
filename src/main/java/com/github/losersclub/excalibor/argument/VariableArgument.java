@@ -4,11 +4,13 @@ import com.github.losersclub.excalibor.ExpressionCompiler;
 
 public class VariableArgument extends Argument implements NotEvaluable {
   private final ExpressionCompiler compiler;
+  private final String key;
   private Object obj = null;
   private boolean evaluable = false;
 
-  public VariableArgument(ExpressionCompiler compiler) {
+  public VariableArgument(ExpressionCompiler compiler, String key) {
     this.compiler = compiler;
+    this.key = key;
   }
 
   @Override
@@ -24,6 +26,15 @@ public class VariableArgument extends Argument implements NotEvaluable {
   @Override
   public Object getValue() {
     return obj;
+  }
+  
+  public String getKey() {
+    return this.key;
+  }
+  
+  @Override
+  public String toString() {
+    return this.getKey();
   }
 
   @Override

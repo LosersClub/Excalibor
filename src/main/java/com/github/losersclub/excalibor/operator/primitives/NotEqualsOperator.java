@@ -1,8 +1,8 @@
 package com.github.losersclub.excalibor.operator.primitives;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
-import com.github.losersclub.excalibor.argument.ComparableArgument;
-import com.github.losersclub.excalibor.argument.LogicalArgument;
+import com.github.losersclub.excalibor.argument.EqualsArgument;
 import com.github.losersclub.excalibor.operator.Operator;
 
 public class NotEqualsOperator extends Operator {
@@ -19,14 +19,12 @@ public class NotEqualsOperator extends Operator {
 
   @Override
   public Argument evaluate(Argument lhs, Argument rhs) {
-    if (lhs instanceof LogicalArgument) {
-      return ((LogicalArgument)lhs).notEquals(rhs);
+    if (lhs instanceof EqualsArgument) {
+      return ((EqualsArgument)lhs).notEquals(rhs);
     }
-    if (lhs instanceof ComparableArgument) {
-      return ((ComparableArgument)lhs).notEquals(rhs);
-    }
-    throw new IllegalArgumentException(String.format("Incompatible types for %s operation",
-        this.getSymbol()));
+    throw new InvalidExpressionException(String.format("Incompatible types for \"%s\" operator. "
+        + "left-hand side is of type \"%s\" and right-hand side is of type \"%s\", but only "
+        + "\"%s\" are supported.", this.getSymbol(), lhs.getClass().getName(),
+        rhs.getClass().getName(), EqualsArgument.class.getName()));
   }
-
 }

@@ -3,6 +3,7 @@ package com.github.losersclub.excalibor.argument;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.primitives.IntArgument;
 import com.github.losersclub.excalibor.argument.primitives.StringArgument;
@@ -42,7 +43,7 @@ public class StringArgumentTest {
     Assert.assertTrue(built instanceof StringArgument && ((String)built.getValue()).equals("Test"));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = InvalidExpressionException.class)
   public void testBadEscape() {
     stringArgOne.parse("\"\\a\"");
   }
@@ -78,7 +79,7 @@ public class StringArgumentTest {
         stringArgTwo.concat(stringArgThree).getValue().equals("HelloWorld!"));
   }
 
-  @Test (expected = IllegalArgumentException.class)
+  @Test (expected = InvalidExpressionException.class)
   public void testInvalidRHS() {
     IntArgument intArg = new IntArgument();
     stringArgOne.concat(intArg);

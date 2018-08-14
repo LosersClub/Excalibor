@@ -22,7 +22,7 @@ public class VariableArgumentTest {
 
   @Before
   public void before() {
-    this.vArg = new VariableArgument(compiler);
+    this.vArg = new VariableArgument(compiler, "x");
   }
 
   @Test

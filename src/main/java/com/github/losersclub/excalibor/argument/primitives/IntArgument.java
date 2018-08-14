@@ -1,5 +1,6 @@
 package com.github.losersclub.excalibor.argument.primitives;
 
+import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.NumberArgument;
 
@@ -29,7 +30,7 @@ public class IntArgument extends NumberArgument {
     if (obj instanceof Number) {
       return new IntArgument(((Number)obj).intValue());
     }
-    throw new IllegalArgumentException(obj.getClass().getSimpleName() + " must of type Number");
+    throw new InvalidExpressionException(obj.getClass().getSimpleName() + " must of type Number");
   }
 
   @Override

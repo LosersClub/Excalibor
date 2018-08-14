@@ -15,5 +15,4 @@ public class GreaterThanEqOperator extends CompareOperator {
   public Argument evaluateCompare(ComparableArgument lhs, Argument rhs) {
     return lhs.greaterThanEqualTo(rhs);
   }
-
 }

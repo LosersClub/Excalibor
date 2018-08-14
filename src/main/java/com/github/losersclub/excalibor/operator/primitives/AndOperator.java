@@ -20,5 +20,4 @@ public class AndOperator extends LogicOperator{
   public Argument evaluateLogic(LogicalArgument lhs, Argument rhs) {
     return lhs.and(rhs);
   }
-
 }
