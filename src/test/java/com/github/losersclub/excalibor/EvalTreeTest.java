@@ -390,6 +390,17 @@ public class EvalTreeTest {
     tree.evaluate();
   }
   
+  @Test(expected = NotEvaluableException.class)
+  public void notEvaluableVariable() {
+    VariableArgument vArg = mock(VariableArgument.class);
+    when(vArg.toString()).thenReturn("var");
+    tree.insert(arg);
+    tree.insert(op);
+    tree.insert(vArg);
+    assertThat(tree.size(), is(3));
+    tree.evaluate();
+  }
+  
   @Test
   public void evaluate() {
     Argument newArg = mock(Argument.class);

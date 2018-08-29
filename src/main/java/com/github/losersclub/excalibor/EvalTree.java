@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.NotEvaluable;
+import com.github.losersclub.excalibor.argument.VariableArgument;
 import com.github.losersclub.excalibor.operator.Operator;
 import com.github.losersclub.excalibor.operator.UnaryOperator;
 
@@ -280,6 +281,10 @@ public final class EvalTree {
           return false;
         }
         if (!((NotEvaluable)arg).isEvaluable()) {
+          if (arg instanceof VariableArgument) {
+            throw new NotEvaluableException("The variable '" + arg.toString() + "' is never "
+                + "defined!");
+          }
           throw new NotEvaluableException("Unable to evaluate the argument \"" + arg.toString()
               + "\" defined by the class \"" + arg.getClass().getName() + "\"."); 
         } 
