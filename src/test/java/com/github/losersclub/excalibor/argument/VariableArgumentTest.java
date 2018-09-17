@@ -14,6 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.github.losersclub.excalibor.ExpressionCompiler;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.VariableArgument;
+import com.github.losersclub.excalibor.argument.primitives.NullArgument;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VariableArgumentTest {
@@ -32,18 +33,18 @@ public class VariableArgumentTest {
   
   @Test
   public void nullConvert() {
-    Assert.assertTrue(this.vArg.convert(this.vArg) == null);
+    Assert.assertTrue(this.vArg.convert(this.vArg) instanceof NullArgument);
   }
 
   @Test
   public void setValue() {
     Object newObj = new Object();
     this.vArg.setValue(null);
-    Assert.assertFalse(this.vArg.isEvaluable());
+    Assert.assertTrue(this.vArg.isEvaluable());
     this.vArg.setValue(newObj);
     Assert.assertTrue(this.vArg.isEvaluable());
     this.vArg.setValue(null);
-    Assert.assertFalse(this.vArg.isEvaluable());
+    Assert.assertTrue(this.vArg.isEvaluable());
   }
 
   @Test

@@ -51,7 +51,7 @@ public class ExpressionCompilerTest {
     ExpressionCompiler noDefaults = new ExpressionCompiler(true);
     Assert.assertTrue(noDefaults.getArguments().size() == 0);
     ExpressionCompiler defaults = new ExpressionCompiler(false);
-    Assert.assertTrue(defaults.getArguments().size() == 9);
+    Assert.assertTrue(defaults.getArguments().size() == 10);
     Assert.assertTrue(defaults.getOperators().size() == 15);
     List<Argument> args = Arrays.asList(new IntArgument(), new DoubleArgument());
     List<Operator> ops = Arrays.asList(new AddOperator());

@@ -1,5 +1,7 @@
 package com.github.losersclub.excalibor.argument;
 
+import com.github.losersclub.excalibor.argument.primitives.NullArgument;
+
 public abstract class Argument {
 
   public abstract Argument parse(String expression);
@@ -7,6 +9,9 @@ public abstract class Argument {
   public abstract Object getValue();
   
   public Argument convert(Argument vArg) {
+    if (vArg.getValue() == null) {
+      return new NullArgument();
+    }
     if (this.getValue() == null || vArg.getValue() == null ||
         vArg.getValue().getClass() != this.getValue().getClass()) {
       return null;

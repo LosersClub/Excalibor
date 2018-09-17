@@ -44,7 +44,7 @@ public class ExpressionCompiler {
     this.arguments.addAll(Arrays.asList(
         new BooleanArgument(), new ByteArgument(), new CharArgument(), new DoubleArgument(),
         new FloatArgument(), new IntArgument(), new LongArgument(), new ShortArgument(),
-        new StringArgument()));
+        new StringArgument(), new NullArgument()));
     this.operators.put("+", new AddOperator());
     this.operators.put("&&", new AndOperator());
     this.operators.put("/", new DivideOperator());

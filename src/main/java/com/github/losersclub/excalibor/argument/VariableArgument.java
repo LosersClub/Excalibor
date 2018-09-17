@@ -20,7 +20,7 @@ public class VariableArgument extends Argument implements NotEvaluable {
 
   public void setValue(Object obj) {
     this.obj = obj;
-    this.evaluable = this.obj != null;
+    this.evaluable = true;
   }
 
   @Override
@@ -49,7 +49,7 @@ public class VariableArgument extends Argument implements NotEvaluable {
 
   @Override
   public Argument convert() {
-    if (this.getValue() == null) {
+    if (!this.evaluable) {
       return this;
     }
     Argument out = null;

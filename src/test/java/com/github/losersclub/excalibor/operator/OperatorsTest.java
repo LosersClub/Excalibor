@@ -11,6 +11,7 @@ import com.github.losersclub.excalibor.InvalidExpressionException;
 import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.primitives.BooleanArgument;
 import com.github.losersclub.excalibor.argument.primitives.IntArgument;
+import com.github.losersclub.excalibor.argument.primitives.NullArgument;
 import com.github.losersclub.excalibor.argument.primitives.StringArgument;
 import com.github.losersclub.excalibor.operator.primitives.AddOperator;
 import com.github.losersclub.excalibor.operator.primitives.AndOperator;
@@ -119,6 +120,16 @@ public class OperatorsTest {
     EqualsOperator equalsOp = new EqualsOperator();
     Argument arg = mock(Argument.class);
     Assert.assertTrue(exceptionHelper(() -> equalsOp.evaluate(arg, intArgOne)));
+  }
+  
+  @Test
+  public void testEqualsNull() {
+    EqualsOperator op = new EqualsOperator();
+    NullArgument nullArg = new NullArgument();
+    IntArgument intArg = new IntArgument(1);
+    op.evaluate(nullArg, nullArg);
+    op.evaluate(nullArg, intArg);
+    op.evaluate(intArg, nullArg);
   }
 
   @Test

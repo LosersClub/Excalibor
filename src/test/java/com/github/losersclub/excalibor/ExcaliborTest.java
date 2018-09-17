@@ -49,5 +49,15 @@ public class ExcaliborTest {
 
     Assert.assertTrue(Excalibor.compile("(3 + x) * 7").toString().equals("(3 + x) * 7"));
   }
+  
+  @Test
+  public void nullTest() {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("x", null);
+    Assert.assertTrue(Excalibor.evaluate("x == null", map, Boolean.class));
+    Assert.assertFalse(Excalibor.evaluate("x != null", map, Boolean.class));
+    Assert.assertFalse(Excalibor.evaluate("null != x", map, Boolean.class));
+    Assert.assertTrue(Excalibor.evaluate("null == x", map, Boolean.class));
+  }
 
 }

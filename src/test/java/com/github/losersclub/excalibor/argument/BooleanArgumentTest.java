@@ -9,6 +9,7 @@ import com.github.losersclub.excalibor.argument.Argument;
 import com.github.losersclub.excalibor.argument.VariableArgument;
 import com.github.losersclub.excalibor.argument.primitives.BooleanArgument;
 import com.github.losersclub.excalibor.argument.primitives.IntArgument;
+import com.github.losersclub.excalibor.argument.primitives.NullArgument;
 
 public class BooleanArgumentTest {
   private BooleanArgument boolArgFalse = new BooleanArgument();
@@ -46,7 +47,7 @@ public class BooleanArgumentTest {
     Argument arg = boolArgTrue.convert(vArg);
     Assert.assertTrue(arg instanceof BooleanArgument && (boolean)arg.getValue());
     Mockito.when(vArg.getValue()).thenReturn(null);
-    Assert.assertTrue(boolArgTrue.convert(vArg) == null);
+    Assert.assertTrue(boolArgTrue.convert(vArg) instanceof NullArgument);
     Mockito.when(vArg.getValue()).thenReturn(new Object());
     Assert.assertTrue(boolArgTrue.convert(vArg) == null);
   }
