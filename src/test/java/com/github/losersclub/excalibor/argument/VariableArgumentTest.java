@@ -72,8 +72,9 @@ public class VariableArgumentTest {
   @Test
   public void noValidParser() {
     Mockito.when(compiler.getArguments()).thenReturn(new ArrayList<>());
-    this.vArg.setValue(new Object());
-    Assert.assertTrue(this.vArg.convert() == this.vArg);
+    Object o = new Object();
+    this.vArg.setValue(o);
+    Assert.assertTrue(this.vArg.convert().getValue() == o);
   }
 
   @Test

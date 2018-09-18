@@ -1,6 +1,7 @@
 package com.github.losersclub.excalibor.argument;
 
 import com.github.losersclub.excalibor.ExpressionCompiler;
+import com.github.losersclub.excalibor.argument.primitives.GenericArgument;
 
 public class VariableArgument extends Argument implements NotEvaluable {
   private final ExpressionCompiler compiler;
@@ -58,6 +59,6 @@ public class VariableArgument extends Argument implements NotEvaluable {
         return out;
       }
     }
-    return this;
+    return new GenericArgument(this.getValue());
   }
 }

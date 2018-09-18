@@ -59,5 +59,17 @@ public class ExcaliborTest {
     Assert.assertFalse(Excalibor.evaluate("null != x", map, Boolean.class));
     Assert.assertTrue(Excalibor.evaluate("null == x", map, Boolean.class));
   }
-
+  
+  @Test
+  public void genericObjects() {
+    Map<String, Object> map = new HashMap<String, Object>();
+    Object obj1 = new Object();
+    Object obj2 = new Object();
+    map.put("x", obj1);    
+    Assert.assertTrue(Excalibor.evaluate("x == x", map, Boolean.class));
+    Assert.assertFalse(Excalibor.evaluate("x != x", map, Boolean.class));
+    map.put("y", obj2);
+    Assert.assertTrue(Excalibor.evaluate("x != y", map, Boolean.class));
+    Assert.assertFalse(Excalibor.evaluate("x == y", map, Boolean.class));
+  }
 }
