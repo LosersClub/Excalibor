@@ -2,7 +2,7 @@ package com.github.losersclub.excalibor.argument;
 
 import com.github.losersclub.excalibor.argument.primitives.BooleanArgument;
 
-public abstract class ComparableArgument extends EqualsArgument {
+public abstract class ComparableArgument extends Argument {
   public abstract BooleanArgument lessThan(Argument rhs);
 
   public BooleanArgument lessThanEqualTo(Argument rhs) {

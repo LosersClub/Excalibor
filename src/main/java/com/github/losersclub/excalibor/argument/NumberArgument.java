@@ -1,6 +1,7 @@
 package com.github.losersclub.excalibor.argument;
 
 import com.github.losersclub.excalibor.InvalidExpressionException;
+import com.github.losersclub.excalibor.argument.primitives.BooleanArgument;
 
 public abstract class NumberArgument extends ComparableArgument {
   
@@ -29,6 +30,10 @@ public abstract class NumberArgument extends ComparableArgument {
   protected abstract double divide(double rhs);
   protected abstract double modulo(double rhs);
   
+  @Override
+  public BooleanArgument equals(Argument rhs) {
+    return new BooleanArgument(this.getMathTypeValue() == getRhsValue("==", rhs));
+  }
   
   protected double getRhsValue(String op, Argument rhs) {
     if (rhs instanceof NumberArgument) {

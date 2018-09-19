@@ -1,5 +1,8 @@
 package com.github.losersclub.excalibor.argument;
 
+import java.util.Objects;
+
+import com.github.losersclub.excalibor.argument.primitives.BooleanArgument;
 import com.github.losersclub.excalibor.argument.primitives.NullArgument;
 
 public abstract class Argument {
@@ -17,6 +20,14 @@ public abstract class Argument {
       return null;
     }
     return build(vArg.getValue());
+  }
+  
+  public BooleanArgument equals(Argument rhs) {
+    return new BooleanArgument(Objects.equals(this.getValue(), rhs.getValue()));
+  }
+  
+  public BooleanArgument notEquals(Argument rhs) {
+    return equals(rhs).not();
   }
   
   @Override

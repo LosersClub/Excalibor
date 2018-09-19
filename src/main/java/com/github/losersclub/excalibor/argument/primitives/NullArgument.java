@@ -1,9 +1,8 @@
 package com.github.losersclub.excalibor.argument.primitives;
 
 import com.github.losersclub.excalibor.argument.Argument;
-import com.github.losersclub.excalibor.argument.EqualsArgument;
 
-public class NullArgument extends EqualsArgument {
+public class NullArgument extends Argument {
   
   @Override
   public Argument parse(String expression) {

@@ -108,28 +108,21 @@ public class OperatorsTest {
     EqualsOperator equalsOp = new EqualsOperator();
     Assert.assertTrue(equalsOp.getSymbol().equals("=="));
     equalsOp.evaluate(intArgOne, intArgTwo);
-    verify(intArgOne, times(1)).equals(intArgTwo);
+    verify(intArgTwo, times(1)).equals(intArgOne);
     equalsOp.evaluate(stringArgOne, stringArgTwo);
     verify(stringArgOne, times(1)).equals(stringArgTwo);
     equalsOp.evaluate(boolArgOne, boolArgTwo);
-    verify(boolArgOne, times(1)).equals(boolArgTwo);
-  }
-
-  @Test
-  public void testEqualsOperatorInvalid() {
-    EqualsOperator equalsOp = new EqualsOperator();
-    Argument arg = mock(Argument.class);
-    Assert.assertTrue(exceptionHelper(() -> equalsOp.evaluate(arg, intArgOne)));
+    verify(boolArgTwo, times(1)).equals(boolArgOne);
   }
   
   @Test
   public void testEqualsNull() {
     EqualsOperator op = new EqualsOperator();
     NullArgument nullArg = new NullArgument();
-    IntArgument intArg = new IntArgument(1);
+    StringArgument strArg = new StringArgument("");
     op.evaluate(nullArg, nullArg);
-    op.evaluate(nullArg, intArg);
-    op.evaluate(intArg, nullArg);
+    op.evaluate(nullArg, strArg);
+    op.evaluate(strArg, nullArg);
   }
 
   @Test
@@ -258,18 +251,11 @@ public class OperatorsTest {
     NotEqualsOperator neOp = new NotEqualsOperator();
     Assert.assertTrue(neOp.getSymbol().equals("!="));
     neOp.evaluate(intArgOne, intArgTwo);
-    verify(intArgOne, times(1)).notEquals(intArgTwo);
+    verify(intArgTwo, times(1)).notEquals(intArgOne);
     neOp.evaluate(stringArgOne, stringArgTwo);
     verify(stringArgOne, times(1)).notEquals(stringArgTwo);
     neOp.evaluate(boolArgOne, boolArgTwo);
-    verify(boolArgOne, times(1)).notEquals(boolArgTwo);
-  }
-
-  @Test
-  public void testNotEqualsOperatorInvalid() {
-    NotEqualsOperator neOp = new NotEqualsOperator();
-    Argument arg = mock(Argument.class);
-    Assert.assertTrue(exceptionHelper(() -> neOp.evaluate(arg, intArgOne)));
+    verify(boolArgTwo, times(1)).notEquals(boolArgOne);
   }
 
   @Test

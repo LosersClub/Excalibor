@@ -57,7 +57,8 @@ public class StringArgument extends ComparableArgument {
 
   @Override
   public BooleanArgument equals(Argument rhs) {
-    return new BooleanArgument(this.value.compareTo(getRhsValue("==", rhs)) == 0);
+    return new BooleanArgument(rhs instanceof StringArgument && 
+        this.value.compareTo((String)rhs.getValue()) == 0);
   }
 
   public StringArgument concat(Argument rhs) {

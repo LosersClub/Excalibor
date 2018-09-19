@@ -89,11 +89,6 @@ public class ByteArgument extends NumberArgument {
   }
 
   @Override
-  public BooleanArgument equals(Argument rhs) {
-    return new BooleanArgument(this.value == getRhsValue("==", rhs));
-  }
-
-  @Override
   public double getMathTypeValue() {
     return this.value;
   }
