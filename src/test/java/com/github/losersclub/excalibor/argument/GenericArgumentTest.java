@@ -25,4 +25,10 @@ public class GenericArgumentTest {
   public void build() {
     Assert.assertTrue(new GenericArgument(new Object()).build(new Object()) == null);
   }
+  
+  @Test
+  public void convert() {
+    GenericArgument arg = new GenericArgument(null);
+    Assert.assertTrue(arg.convert(new GenericArgument(new Object())) == null);
+  }
 }
