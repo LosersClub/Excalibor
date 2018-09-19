@@ -15,8 +15,7 @@ public abstract class Argument {
     if (vArg.getValue() == null) {
       return new NullArgument();
     }
-    if (this.getValue() == null || vArg.getValue() == null ||
-        vArg.getValue().getClass() != this.getValue().getClass()) {
+    if (this.getValue() == null || vArg.getValue().getClass() != this.getValue().getClass()) {
       return null;
     }
     return build(vArg.getValue());
